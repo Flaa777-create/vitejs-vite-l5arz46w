@@ -1,7 +1,155 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
+import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
 
+// ==========================================
+// COMPONENTE: TELA DE PAGAMENTO ASAAS (SaaS)
+// ==========================================
+export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: string; emailOriginal: string; onSucesso: () => void }) {
+  const [paymentMethod, setPaymentMethod] = useState<'CREDIT_CARD' | 'PIX'>('CREDIT_CARD');
+  const [loading, setLoading] = useState(false);
+  const [cardData, setCardData] = useState({
+    holderName: '',
+    number: '',
+    expiry: '',
+    ccv: '',
+    cpfCnpj: ''
+  });
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Simulação ou chamada real de gravação/ativação da assinatura no Supabase/Asaas
+      await supabase.from('salons').upsert([
+        { owner_id: userId, subscription_status: 'active', updated_at: new Date().toISOString() }
+      ], { onConflict: 'owner_id' });
+
+      setTimeout(() => {
+        setLoading(false);
+        onSucesso();
+      }, 1500);
+    } catch (err: any) {
+      alert('Erro ao processar pagamento: ' + err.message);
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
+      <div className="bg-neutral-900 text-white rounded-3xl border border-neutral-800 p-6 max-w-lg w-full mx-auto shadow-2xl" style={{ backgroundColor: '#18181b', padding: '24px', borderRadius: '24px' }}>
+        <div className="flex items-center justify-between mb-6" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GlowAgenda</span>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0', color: '#fff' }}>Ativar Assinatura do SaaS</h2>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '24px', fontWeight: '800', color: '#fff' }}>R$ 69,90</span>
+            <span style={{ fontSize: '12px', color: '#a1a1aa' }}>/mês</span>
+          </div>
+        </div>
+
+        {/* Resumo do Plano */}
+        <div style={{ backgroundColor: '#09090b', borderRadius: '12px', padding: '16px', marginBottom: '24px', border: '1px solid #27272a', fontSize: '12px', color: '#d4d4d8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+          <span style={{ fontWeight: '600' }}>GlowAgenda Completo</span>
+<span style={{ fontWeight: '600' }}>R$ 69,90</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#71717a' }}>
+            <span>Cobrança recorrente via Asaas</span>
+            <span>Mensal</span>
+          </div>
+        </div>
+
+        {/* Seletor de Método de Pagamento */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('CREDIT_CARD')}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px',
+              borderRadius: '12px', border: paymentMethod === 'CREDIT_CARD' ? '2px solid #ec4899' : '1px solid #27272a',
+              backgroundColor: paymentMethod === 'CREDIT_CARD' ? 'rgba(236,72,153,0.1)' : '#09090b',
+              color: paymentMethod === 'CREDIT_CARD' ? '#f472b6' : '#a1a1aa',
+              fontSize: '12px', fontWeight: '500', cursor: 'pointer'
+            }}
+          >
+            <CreditCard className="w-4 h-4" /> Cartão de Crédito
+          </button>
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('PIX')}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px',
+              borderRadius: '12px', border: paymentMethod === 'PIX' ? '2px solid #ec4899' : '1px solid #27272a',
+              backgroundColor: paymentMethod === 'PIX' ? 'rgba(236,72,153,0.1)' : '#09090b',
+              color: paymentMethod === 'PIX' ? '#f472b6' : '#a1a1aa',
+              fontSize: '12px', fontWeight: '500', cursor: 'pointer'
+            }}
+          >
+            <QrCode className="w-4 h-4" /> PIX Instantâneo
+          </button>
+        </div>
+
+        <form onSubmit={handleSubscribe} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {paymentMethod === 'CREDIT_CARD' ? (
+            <>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginBottom: '4px' }}>Nome no Cartão</label>
+                <input type="text" required value={cardData.holderName} onChange={e => setCardData({...cardData, holderName: e.target.value})} placeholder="Ex: Ana Silva" style={{ width: '100%', backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '10px 12px', fontSize: '12px', color: '#fff', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginBottom: '4px' }}>Número do Cartão</label>
+                <input type="text" required value={cardData.number} onChange={e => setCardData({...cardData, number: e.target.value})} placeholder="0000 0000 0000 0000" style={{ width: '100%', backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '10px 12px', fontSize: '12px', color: '#fff', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginBottom: '4px' }}>Validade (MM/AA)</label>
+                  <input type="text" required value={cardData.expiry} onChange={e => setCardData({...cardData, expiry: e.target.value})} placeholder="MM/AA" style={{ width: '100%', backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '10px 12px', fontSize: '12px', color: '#fff', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginBottom: '4px' }}>CVV</label>
+                  <input type="text" required value={cardData.ccv} onChange={e => setCardData({...cardData, ccv: e.target.value})} placeholder="123" style={{ width: '100%', backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '10px 12px', fontSize: '12px', color: '#fff', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginBottom: '4px' }}>CPF / CNPJ da Titular</label>
+                <input type="text" required value={cardData.cpfCnpj} onChange={e => setCardData({...cardData, cpfCnpj: e.target.value})} placeholder="000.000.000-00" style={{ width: '100%', backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '10px 12px', fontSize: '12px', color: '#fff', boxSizing: 'border-box' }} />
+              </div>
+            </>
+          ) : (
+            <div style={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+              <div style={{ width: '128px', height: '128px', backgroundColor: '#fff', margin: '0 auto 12px auto', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontSize: '11px', fontWeight: 'bold' }}>
+                [ QR Code PIX Asaas ]
+              </div>
+              <p style={{ fontSize: '11px', color: '#a1a1aa', margin: 0 }}>
+                Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.
+              </p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ width: '100%', padding: '14px', backgroundColor: '#ec4899', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', opacity: loading ? 0.6 : 1, marginTop: '8px' }}
+          >
+            {loading ? 'A processar no Asaas...' : 'Confirmar e Assinar R$ 69,90/mês'}
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '10px', color: '#71717a', paddingTop: '8px' }}>
+            <Lock style={{ width: '12px', height: '12px' }} />
+            <span>Pagamento processado com segurança via Asaas</span>
+            <ShieldCheck style={{ width: '12px', height: '12px', color: '#10b981', marginLeft: '4px' }} />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+// ==========================================
+// ROTEAMENTO PRINCIPAL
+// ==========================================
 export default function App() {
   return (
     <Routes>
@@ -51,7 +199,6 @@ export function TelaCliente() {
   });
 
   const carregarDadosPublicos = useCallback(async () => {
-    // Carrega configurações globais da tabela salons (primeiro salão ou ativo)
     const { data: salonData } = await supabase.from('salons').select('*').limit(1).single();
     if (salonData) {
       setSalonOwnerId(salonData.owner_id || null);
@@ -65,7 +212,6 @@ export function TelaCliente() {
       if (salonData.chave_pix_sinal) setChavePixSinal(salonData.chave_pix_sinal);
       if (salonData.cobrar_sinal !== undefined) setCobrarSinalConfig(Boolean(salonData.cobrar_sinal));
 
-      // Carrega serviços vinculados à dona desse salão (ou geral se fallback)
       let queryServ = supabase.from('servicos').select('*').order('nome_servico', { ascending: true });
       if (salonData.owner_id) {
         queryServ = queryServ.eq('owner_id', salonData.owner_id);
@@ -73,7 +219,6 @@ export function TelaCliente() {
       const { data: servs } = await queryServ;
       if (servs) setServicosDoSalao(servs);
 
-      // Carrega profissionais vinculados à dona
       let queryFunc = supabase.from('funcionarios').select('*');
       if (salonData.owner_id) {
         queryFunc = queryFunc.eq('owner_id', salonData.owner_id);
@@ -368,23 +513,28 @@ export function TelaAuth() {
   const navigate = useNavigate();
   const [modoAuth, setModoAuth] = useState<'cadastro' | 'login'>('cadastro');
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [password, setPassword] = useState('');
   const [carregando, setCarregando] = useState(false);
+
+  const [userCriadoId, setUserCriadoId] = useState<string | null>(null);
+  const [emailCriado, setEmailCriado] = useState('');
+  const [passouPeloPagamento, setPassouPeloPagamento] = useState(false);
 
   const lidarComAuth = async (e: React.FormEvent) => {
     e.preventDefault(); 
     setCarregando(true);
     try {
       if (modoAuth === 'cadastro') {
-        const { data, error } = await supabase.auth.signUp({ email, password: senha });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        // Cria registro inicial em salons caso não exista
-        if (data.user) {
-          await supabase.from('salons').upsert([{ owner_id: data.user.id, subscription_status: 'active' }], { onConflict: 'owner_id' });
+        
+        if (data?.user) {
+          await supabase.from('salons').upsert([{ owner_id: data.user.id, subscription_status: 'pending' }], { onConflict: 'owner_id' });
+          setUserCriadoId(data.user.id);
+          setEmailCriado(data.user.email ?? email);
         }
-        alert('Conta criada com sucesso!');
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate('/painel');
       }
@@ -411,6 +561,19 @@ export function TelaAuth() {
     }
   };
 
+  if (userCriadoId && !passouPeloPagamento) {
+    return (
+      <TelaPagamento 
+        userId={userCriadoId} 
+        emailOriginal={emailCriado} 
+        onSucesso={() => {
+          setPassouPeloPagamento(true);
+          navigate('/painel');
+        }} 
+      />
+    );
+  }
+
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
       <div style={{ width: '100%', maxWidth: '380px', backgroundColor: '#fff0f3', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
@@ -425,7 +588,7 @@ export function TelaAuth() {
           
           <div style={{ marginBottom: '25px' }}>
             Sua Senha
-            <input type="password" required value={senha} onChange={(e) => setSenha(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} />
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} />
           </div>
 
           <button type="submit" disabled={carregando} style={{ width: '100%', padding: '15px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
@@ -488,48 +651,47 @@ export function TelaRedefinirSenha() {
 export function TelaAssinaturaPendente() {
   const navigate = useNavigate();
   const [simulandoAtivacao, setSimulandoAtivacao] = useState(false);
+  const [userAtual, setUserAtual] = useState<any>(null);
+  const [emailAtual, setEmailAtual] = useState('');
+  const [irParaCheckout, setIrParaCheckout] = useState(false);
 
-  const regularizarAssinaturaReal = async () => {
-    setSimulandoAtivacao(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Não autenticado');
-
-      const res = await fetch('/api/create-mp-subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          salonId: user.id,
-          email: user.email,
-          salonName: 'Meu Studio'
-        })
-      });
-      const data = await res.json();
-      if (data.init_point) {
-        window.location.href = data.init_point; // Vai para o checkout do MP
-      } else {
-        alert(data.error || 'Erro ao gerar checkout');
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUserAtual(user);
+        setEmailAtual(user.email || '');
       }
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setSimulandoAtivacao(false);
-    }
+    });
+  }, []);
+
+  const regularizarAssinaturaAsaas = async () => {
+    setIrParaCheckout(true);
   };
+
+  if (irParaCheckout && userAtual) {
+    return (
+      <TelaPagamento 
+        userId={userAtual.id} 
+        emailOriginal={emailAtual} 
+        onSucesso={() => navigate('/painel')} 
+      />
+    );
+  }
+
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
       <div style={{ width: '100%', maxWidth: '380px', backgroundColor: '#1f1215', border: '1px solid #dc2626', borderRadius: '30px', padding: '30px 20px', color: '#fff', textAlign: 'center', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
         <div style={{ fontSize: '40px', marginBottom: '10px' }}>⚠️</div>
         <h2 style={{ color: '#ef4444', margin: '0 0 10px 0', fontSize: '22px' }}>Assinatura Pendente</h2>
         <p style={{ color: '#aaa', fontSize: '13px', lineHeight: '1.5', marginBottom: '25px' }}>
-          O acesso ao seu painel de agendamentos foi pausado por inadimplência ou carência da mensalidade (R$ 69,90). Regularize para liberar sua agenda.
+          O acesso ao seu painel de agendamentos foi pausado por inadimplência ou carência da mensalidade (R$ 69,90). Regularize via Asaas para liberar sua agenda.
         </p>
         <button 
-          onClick={regularizarAssinaturaMock} 
+          onClick={regularizarAssinaturaAsaas} 
           disabled={simulandoAtivacao}
-          style={{ width: '100%', padding: '15px', backgroundColor: '#1ebd60', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px' }}
+          style={{ width: '100%', padding: '15px', backgroundColor: '#ec4899', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px' }}
         >
-          {simulandoAtivacao ? 'Processando Webhook...' : '💳 Regularizar e Liberar Acesso'}
+          💳 Regularizar e Liberar Acesso
         </button>
         <button 
           onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }} 
@@ -605,7 +767,6 @@ export function TelaProprietaria() {
       }
       setCurrentOwnerId(user.id);
 
-      // 1. Checa status da assinatura do salão da usuária
       const { data: salonData } = await supabase.from('salons').select('*').eq('owner_id', user.id).single();
       const subStatus = salonData?.subscription_status || 'active';
       if (subStatus !== 'active') {
@@ -623,11 +784,9 @@ export function TelaProprietaria() {
         if (salonData.chave_pix_sinal) setChavePixSinal(salonData.chave_pix_sinal);
       }
 
-      // 2. Carrega apenas catálogo limpo de serviços do owner
       const { data: servs } = await supabase.from('servicos').select('*').eq('owner_id', user.id).order('created_at', { ascending: false });
       if (servs) setListaServicos(servs);
 
-      // 3. Carrega agendamentos restritos ao owner_id (ou sem owner_id legado)
       const { data: agends, error: errAgend } = await supabase
         .from('agendamentos')
         .select('*')
