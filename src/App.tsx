@@ -41,7 +41,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
       <div className="bg-neutral-900 text-white rounded-3xl border border-neutral-800 p-6 max-w-lg w-full mx-auto shadow-2xl" style={{ backgroundColor: '#18181b', padding: '24px', borderRadius: '24px' }}>
         <div className="flex items-center justify-between mb-6" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div>
-            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GlowAgenda</span>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GlowAgenda </span>
             <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0', color: '#fff' }}>Ativar Assinatura do SaaS</h2>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -53,8 +53,8 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
         {/* Resumo do Plano */}
         <div style={{ backgroundColor: '#09090b', borderRadius: '12px', padding: '16px', marginBottom: '24px', border: '1px solid #27272a', fontSize: '12px', color: '#d4d4d8' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span style={{ fontWeight: '600' }}>GlowAgenda Completo</span>
-<span style={{ fontWeight: '600' }}>R$ 69,90</span>
+            <span>Plano Mensal</span>
+            <span style={{ fontWeight: '600' }}>R$ 69,90</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#71717a' }}>
             <span>Cobrança recorrente via Asaas</span>
@@ -147,6 +147,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
     </div>
   );
 }
+
 // ==========================================
 // ROTEAMENTO PRINCIPAL
 // ==========================================
@@ -1105,7 +1106,6 @@ export function TelaProprietaria() {
           </div>
         </div>
       )}
-
       {/* ABA CONFIGURAÇÕES */}
       {abaAtiva === 'configuracao' && (
         <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
