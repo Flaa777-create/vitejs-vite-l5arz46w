@@ -3,12 +3,21 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
 
+import React, { useState } from 'react';
+import { CreditCard, QrCode, Lock, ShieldCheck } from 'lucide-react'; // Certifique-se de importar os ícones
+
 // ==========================================
 // COMPONENTE: TELA DE PAGAMENTO ASAAS (SaaS)
 // ==========================================
 export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: string; emailOriginal: string; onSucesso: () => void }) {
   const [paymentMethod, setPaymentMethod] = useState<'CREDIT_CARD' | 'PIX'>('CREDIT_CARD');
   const [loading, setLoading] = useState(false);
+  
+  // Estados para armazenar os dados reais do Pix gerado pelo Asaas
+  const [pixQrCodeBase64, setPixQrCodeBase64] = useState<string | null>(null);
+  const [pixCopiaECola, setPixCopiaECola] = useState<string>('');
+  const [gerandoPix, setGerandoPix] = useState(false);
+
   const [cardData, setCardData] = useState({
     holderName: '',
     number: '',
@@ -17,11 +26,59 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
     cpfCnpj: ''
   });
 
+  // Função para chamar o Asaas e gerar o QR Code do Pix
+  const handleSelecionarPix = async () => {
+    setPaymentMethod('PIX');
+    
+    // Se já tiver gerado, não precisa gerar de novo toda vez que clicar na aba
+    if (pixQrCodeBase64) return;
+
+    setGerandoPix(true);
+    try {
+      // ⚠️ ATENÇÃO: O ideal é que essa chamada passe por uma rota backend sua (ex: /api/criar-cobranca-asaas) 
+      // para não expor sua chave de API do Asaas diretamente no navegador da cliente.
+      const resposta = await fetch('https://api.asaas.com/v3/payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'access_token': 'SUA_CHAVE_DE_API_DO_ASAAS' // Substitua pela sua chave ou pela rota do seu backend
+        },
+        body: JSON.stringify({
+          customer: userId, // Ou o ID do cliente criado no Asaas
+          billingType: 'PIX',
+          value: 69.90,
+          dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Vencimento amanhã
+          description: 'Assinatura Mensal Glowagenda - SaaS'
+        })
+      });
+
+      const dadosCobranca = await resposta.json();
+      
+      if (dadosCobranca.id) {
+        // Busca os dados do QR Code da cobrança criada
+        const resQrCode = await fetch(`https://api.asaas.com/v3/payments/${dadosCobranca.id}/pixQrCode`, {
+          headers: {
+            'access_token': 'SUA_CHAVE_DE_API_DO_ASAAS'
+          }
+        });
+        const dadosPix = await resQrCode.json();
+        
+        setPixQrCodeBase64(dadosPix.encodedImage); // Imagem em base64
+        setPixCopiaECola(dadosPix.payload); // Código copia e cola
+      }
+    } catch (err: any) {
+      console.error('Erro ao gerar Pix no Asaas:', err);
+      alert('Não foi possível gerar o QR Code do Pix automaticamente.');
+    } finally {
+      setGerandoPix(false);
+    }
+  };
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Simulação ou chamada real de gravação/ativação da assinatura no Supabase/Asaas
+      // Simulação ou chamada real de gravação/ativação da assinatura no Supabase
       await supabase.from('salons').upsert([
         { owner_id: userId, subscription_status: 'active', updated_at: new Date().toISOString() }
       ], { onConflict: 'owner_id' });
@@ -79,7 +136,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
           </button>
           <button
             type="button"
-            onClick={() => setPaymentMethod('PIX')}
+            onClick={handleSelecionarPix}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px',
               borderRadius: '12px', border: paymentMethod === 'PIX' ? '2px solid #ec4899' : '1px solid #27272a',
@@ -120,10 +177,35 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: { userId: st
             </>
           ) : (
             <div style={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
-              <div style={{ width: '128px', height: '128px', backgroundColor: '#fff', margin: '0 auto 12px auto', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontSize: '11px', fontWeight: 'bold' }}>
-                [ QR Code PIX Asaas ]
-              </div>
-              <p style={{ fontSize: '11px', color: '#a1a1aa', margin: 0 }}>
+              {gerandoPix ? (
+                <p style={{ fontSize: '12px', color: '#a1a1aa', padding: '40px 0' }}>Gerando QR Code Pix no Asaas...</p>
+              ) : pixQrCodeBase64 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <img 
+                    src={`data:image/png;base64,${pixQrCodeBase64}`} 
+                    alt="QR Code Pix Asaas" 
+                    style={{ width: '160px', height: '160px', backgroundColor: '#fff', padding: '8px', borderRadius: '8px' }} 
+                  />
+                  <div style={{ width: '100%' }}>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={pixCopiaECola} 
+                      style={{ width: '100%', backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '8px', padding: '8px', fontSize: '10px', color: '#fff', textAlign: 'center', marginBottom: '8px' }} 
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(pixCopiaECola)}
+                      style={{ width: '100%', padding: '8px', backgroundColor: '#27272a', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '11px', cursor: 'pointer' }}
+                    >
+                      Copiar Código Pix
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ fontSize: '12px', color: '#ef4444', padding: '20px 0' }}>Erro ao carregar o QR Code. Tente reabrir a aba.</p>
+              )}
+              <p style={{ fontSize: '11px', color: '#a1a1aa', margin: '12px 0 0 0' }}>
                 Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.
               </p>
             </div>
