@@ -30,7 +30,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
       email: emailOriginal,
       cpfCnpj: cpfCnpj.replace(/\D/g, ''), // remove pontos e traços
       telefone: telefone.replace(/\D/g, ''),
-      hora_abertura: "08:00", // Valores padrão que ela edita depois na sua tela de Ajustes
+      hora_abertura: "08:00", 
       hora_fechamento: "18:00",
       dadosCartao: {
         nomeTitular,
@@ -42,9 +42,8 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
     };
 
     try {
-      // Chame a sua Edge Function do Supabase que criamos juntos!
-      // Substitua pela URL da sua função caso mude
-      const response = await fetch('https://supabase.co', {
+      
+      const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +55,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
 
       if (data.success) {
         alert('✨ Assinatura confirmada! Bem-vinda à GlowAgenda.');
-        onSucesso(); // Avança para o Dashboard/Ajustes
+        onSucesso(); 
       } else {
         alert(`❌ Erro no pagamento: ${data.error}`);
       }
@@ -72,7 +71,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
       <div className="w-full max-w-md bg-[#1c1c1f] rounded-2xl p-6 shadow-xl border border-pink-500/20">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-pink-500">✨ GlowAgenda Premium</h2>
-          <p className="text-sm text-gray-400 mt-1">Ative sua assinatura mensal de R\$ 169,90</p>
+          <p className="text-sm text-gray-400 mt-1">Ative sua assinatura mensal de R$ 69,90</p>
         </div>
 
         <form onSubmit={handleAssinar} className="space-y-4">
@@ -107,7 +106,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
             <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} className="w-full bg-[#121214] border border-gray-700 rounded-lg p-2 text-sm focus:border-pink-500 outline-none" placeholder="0000 0000 0000 0000" />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols.3 grid-cols-3 gap-2">
             <div>
               <label className="text-xs text-gray-400 block mb-1">Mês (MM)</label>
               <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} className="w-full bg-[#121214] border border-gray-700 rounded-lg p-2 text-sm focus:border-pink-500 outline-none" placeholder="05" />
