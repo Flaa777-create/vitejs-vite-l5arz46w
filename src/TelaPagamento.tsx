@@ -67,40 +67,49 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f13] flex flex-col items-center justify-center p-4 text-white">
-      <div className="w-full max-w-xl bg-[#18181c] rounded-2xl p-6 shadow-2xl border border-gray-800">
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f0f13', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px', color: '#ffffff', fontFamily: 'sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: '500px', backgroundColor: '#18181c', borderRadius: '16px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)', border: '1px solid #27272a' }}>
         
         {/* Cabeçalho */}
-        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #27272a', paddingBottom: '16px' }}>
           <div>
-            <span className="text-xs font-bold tracking-wider text-pink-500 uppercase">GLOWAGENDA PREMIUM</span>
-            <h2 className="text-xl font-bold text-white mt-1">Ativar Assinatura do SaaS</h2>
+            <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px', color: '#ec4899', textTransform: 'uppercase' }}>GLOWAGENDA PREMIUM</span>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#ffffff', marginTop: '4px' }}>Ativar Assinatura do SaaS</h2>
           </div>
-          <div className="text-right">
-            <span className="text-2xl font-black text-white">R$ 69,90</span>
-            <span className="text-xs text-gray-400 block">/mês</span>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>R$ 69,90</span>
+            <span style={{ fontSize: '11px', color: '#9ca3af', display: 'block' }}>/mês</span>
           </div>
         </div>
 
         {/* Resumo do Plano */}
-        <div className="bg-[#1f1f24] rounded-xl p-4 mb-6 border border-gray-800 flex justify-between items-center">
+        <div style={{ backgroundColor: '#1f1f24', borderRadius: '12px', padding: '16px', marginBottom: '24px', border: '1px solid #27272a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <p className="text-sm font-semibold text-white">Plano Mensal</p>
-            <p className="text-xs text-gray-400">Cobrança recorrente via Asaas</p>
+            <p style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff', margin: 0 }}>Plano Mensal</p>
+            <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0 0' }}>Cobrança recorrente via Asaas</p>
           </div>
-          <span className="text-xs bg-pink-500/10 text-pink-400 px-2.5 py-1 rounded-md font-medium">Mensal</span>
+          <span style={{ fontSize: '11px', backgroundColor: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', padding: '4px 10px', borderRadius: '6px', fontWeight: '500' }}>Mensal</span>
         </div>
 
         {/* Seletor de Método de Pagamento */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
             onClick={() => setMetodoPagamento('cartao')}
-            className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-all ${
-              metodoPagamento === 'cartao' 
-                ? 'border-pink-500 bg-pink-500/10 text-white' 
-                : 'border-gray-800 bg-[#1f1f24] text-gray-400 hover:border-gray-700'
-            }`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '12px',
+              borderRadius: '12px',
+              border: metodoPagamento === 'cartao' ? '1px solid #ec4899' : '1px solid #27272a',
+              backgroundColor: metodoPagamento === 'cartao' ? 'rgba(236, 72, 153, 0.1)' : '#1f1f24',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}
           >
             <span>💳</span> Cartão de Crédito
           </button>
@@ -108,82 +117,91 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
           <button
             type="button"
             onClick={() => setMetodoPagamento('pix')}
-            className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-sm font-medium transition-all ${
-              metodoPagamento === 'pix' 
-                ? 'border-pink-500 bg-pink-500/10 text-white' 
-                : 'border-gray-800 bg-[#1f1f24] text-gray-400 hover:border-gray-700'
-            }`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '12px',
+              borderRadius: '12px',
+              border: metodoPagamento === 'pix' ? '1px solid #ec4899' : '1px solid #27272a',
+              backgroundColor: metodoPagamento === 'pix' ? 'rgba(236, 72, 153, 0.1)' : '#1f1f24',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}
           >
             <span>📱</span> Pix Instantâneo
           </button>
         </div>
 
-        <form onSubmit={handleAssinar} className="space-y-4">
+        <form onSubmit={handleAssinar} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Dados Pessoais */}
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
-              <label className="text-xs text-gray-400 block mb-1">Nome Completo</label>
-              <input type="text" required value={nomeCliente} onChange={e => setNomeCliente(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="Ex: Paula Souza" />
+              <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Nome Completo</label>
+              <input type="text" required value={nomeCliente} onChange={e => setNomeCliente(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="Ex: Paula Souza" />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">CPF ou CNPJ</label>
-                <input type="text" required value={cpfCnpj} onChange={e => setCpfCnpj(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="Apenas números" />
+                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CPF ou CNPJ</label>
+                <input type="text" required value={cpfCnpj} onChange={e => setCpfCnpj(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="Apenas números" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">WhatsApp</label>
-                <input type="text" required value={telefone} onChange={e => setTelefone(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="(DDD) 99999-0000" />
+                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>WhatsApp</label>
+                <input type="text" required value={telefone} onChange={e => setTelefone(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="(DDD) 99999-0000" />
               </div>
             </div>
           </div>
 
           {metodoPagamento === 'cartao' ? (
-            <div className="space-y-3 pt-2">
-              <div className="border-t border-gray-800 pt-3">
-                <p className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2">💳 Dados do Cartão de Crédito</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+              <div style={{ borderTop: '1px solid #27272a', paddingTop: '12px' }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>💳 Dados do Cartão de Crédito</p>
               </div>
 
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Nome impresso no Cartão</label>
-                <input type="text" required value={nomeTitular} onChange={e => setNomeTitular(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="COMO ESTÁ NO CARTÃO" />
+                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Nome impresso no Cartão</label>
+                <input type="text" required value={nomeTitular} onChange={e => setNomeTitular(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="COMO ESTÁ NO CARTÃO" />
               </div>
 
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Número do Cartão</label>
-                <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="0000 0000 0000 0000" />
+                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Número do Cartão</label>
+                <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="0000 0000 0000 0000" />
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Mês (MM)</label>
-                  <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="05" />
+                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Mês (MM)</label>
+                  <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="05" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Ano (AAAA)</label>
-                  <input type="text" required maxLength={4} value={anoExpiracao} onChange={e => setAnoExpiracao(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="2030" />
+                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Ano (AAAA)</label>
+                  <input type="text" required maxLength={4} value={anoExpiracao} onChange={e => setAnoExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="2030" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">CVV</label>
-                  <input type="text" required maxLength={4} value={cvv} onChange={e => setCvv(e.target.value)} className="w-full bg-[#121215] border border-gray-800 rounded-lg p-2.5 text-sm focus:border-pink-500 outline-none text-white" placeholder="123" />
+                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CVV</label>
+                  <input type="text" required maxLength={4} value={cvv} onChange={e => setCvv(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="123" />
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-[#121215] border border-gray-800 rounded-xl p-6 text-center space-y-3">
-              <div className="w-32 h-32 bg-white/5 mx-auto rounded-lg flex items-center justify-center border border-gray-800">
-                <span className="text-xs text-gray-400">[ QR Code PIX Asaas ]</span>
+            <div style={{ backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '12px', padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ width: '120px', height: '120px', backgroundColor: 'rgba(255,255,255,0.03)', margin: '0 auto', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #27272a' }}>
+                <span style={{ fontSize: '11px', color: '#9ca3af' }}>[ QR Code PIX Asaas ]</span>
               </div>
-              <p className="text-xs text-gray-400">Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.</p>
+              <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.</p>
             </div>
           )}
 
-          <button type="submit" disabled={carregando} className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold p-3 rounded-xl mt-4 text-sm transition duration-200 disabled:opacity-50 shadow-lg shadow-pink-600/20">
+          <button type="submit" disabled={carregando} style={{ width: '100%', backgroundColor: '#db2777', color: '#ffffff', fontWeight: 'bold', padding: '12px', borderRadius: '12px', marginTop: '8px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: carregando ? 0.5 : 1, boxShadow: '0 10px 15px -3px rgba(219, 39, 119, 0.3)' }}>
             {carregando ? 'Processando Assinatura...' : 'Confirmar e Assinar R$ 69,90/mês'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-500 mt-4 flex items-center justify-center gap-1">
+        <p style={{ textAlign: 'center', fontSize: '11px', color: '#6b7280', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
           🔒 Pagamento processado com segurança via Asaas
         </p>
       </div>
