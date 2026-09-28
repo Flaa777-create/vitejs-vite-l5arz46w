@@ -46,24 +46,34 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
     };
 
     try {
+      // Obtém o token da sessão ativa do Supabase para autenticar a Edge Function corretamente
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+
       const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', 
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-  },
-  body: JSON.stringify(dadosParaEnvio)
-});
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(dadosParaEnvio)
+      });
 
-      const data = await response.json();
-      console.log("Resposta completa da API:", data); // <--- Vai mostrar tudo no F12 do navegador
+      const textResponse = await response.text();
+      let data = {};
+      try {
+        data = textResponse ? JSON.parse(textResponse) : {};
+      } catch (parseErr) {
+        console.error("Erro ao converter resposta para JSON:", textResponse);
+      }
 
-      if (response.ok && data.success !== false) {
+      console.log("Resposta completa da API:", data);
+
+      if (response.ok && (data as any).success !== false) {
         if (metodoPagamento === 'pix') {
           setDadosPix({
-            qrCodeUrl: data.qrCodeUrl || data.encodedImage || data.pixQrCode || data.image,
-            copiaECola: data.copiaECola || data.payload || data.pixCopyPaste
+            qrCodeUrl: (data as any).qrCodeUrl || (data as any).encodedImage || (data as any).pixQrCode || (data as any).image,
+            copiaECola: (data as any).copiaECola || (data as any).payload || (data as any).pixCopyPaste
           });
           setCarregando(false);
         } else {
@@ -71,7 +81,7 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
           onSucesso(); 
         }
       } else {
-        const mensagemErro = data.error || data.message || JSON.stringify(data);
+        const mensagemErro = (data as any).error || (data as any).message || textResponse || 'Erro desconhecido';
         alert(`❌ Erro no pagamento: ${mensagemErro}`);
         setCarregando(false);
       }
