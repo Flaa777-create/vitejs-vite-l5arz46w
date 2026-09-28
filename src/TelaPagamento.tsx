@@ -21,9 +21,13 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
   const [carregando, setCarregando] = useState(false);
   const [metodoPagamento, setMetodoPagamento] = useState<'cartao' | 'pix'>('cartao');
 
+  // Estados para exibir o Pix gerado pela API
+  const [dadosPix, setDadosPix] = useState<{ qrCodeUrl?: string; copiaECola?: string } | null>(null);
+
   async function handleAssinar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando(true);
+    setDadosPix(null);
 
     const dadosParaEnvio = {
       user_id: userId,
@@ -31,15 +35,14 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
       email: emailOriginal,
       cpfCnpj: cpfCnpj.replace(/\D/g, ''),
       telefone: telefone.replace(/\D/g, ''),
-      hora_abertura: "08:00", 
-      hora_fechamento: "18:00",
-      dadosCartao: {
+      billingType: metodoPagamento === 'pix' ? 'PIX' : 'CREDIT_CARD',
+      dadosCartao: metodoPagamento === 'cartao' ? {
         nomeTitular,
         numero: numeroCartao.replace(/\s/g, ''),
         mesExpiracao,
         anoExpiracao,
         cvv
-      }
+      } : null
     };
 
     try {
@@ -54,14 +57,23 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
       const data = await response.json();
 
       if (data.success) {
-        alert('✨ Assinatura confirmada! Bem-vinda à GlowAgenda.');
-        onSucesso(); 
+        if (metodoPagamento === 'pix') {
+          // Ajuste conforme o retorno exato da sua Edge Function para o Pix (ex: data.pixQrCode, data.encodedImage, etc.)
+          setDadosPix({
+            qrCodeUrl: data.qrCodeUrl || data.encodedImage,
+            copiaECola: data.copiaECola || data.payload
+          });
+          setCarregando(false);
+        } else {
+          alert('✨ Assinatura confirmada! Bem-vinda à GlowAgenda.');
+          onSucesso(); 
+        }
       } else {
         alert(`❌ Erro no pagamento: ${data.error}`);
+        setCarregando(false);
       }
     } catch (err) {
       alert('❌ Falha ao conectar ao servidor de pagamento.');
-    } finally {
       setCarregando(false);
     }
   }
@@ -95,7 +107,7 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
-            onClick={() => setMetodoPagamento('cartao')}
+            onClick={() => { setMetodoPagamento('cartao'); setDadosPix(null); }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -116,7 +128,7 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
           
           <button
             type="button"
-            onClick={() => setMetodoPagamento('pix')}
+            onClick={() => { setMetodoPagamento('pix'); setDadosPix(null); }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -188,16 +200,31 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
               </div>
             </div>
           ) : (
-            <div style={{ backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '12px', padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ width: '120px', height: '120px', backgroundColor: 'rgba(255,255,255,0.03)', margin: '0 auto', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #27272a' }}>
-                <span style={{ fontSize: '11px', color: '#9ca3af' }}>[ QR Code PIX Asaas ]</span>
-              </div>
+            <div style={{ backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '12px', padding: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {dadosPix?.qrCodeUrl ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <img src={dadosPix.qrCodeUrl.startsWith('http') ? dadosPix.qrCodeUrl : `data:image/png;base64,${dadosPix.qrCodeUrl}`} alt="QR Code Pix" style={{ width: '160px', height: '160px', borderRadius: '8px', background: '#fff', padding: '8px' }} />
+                  {dadosPix.copiaECola && (
+                    <button 
+                      type="button" 
+                      onClick={() => { navigator.clipboard.writeText(dadosPix.copiaECola!); alert('📋 Código Pix Copia e Cola copiado!'); }}
+                      style={{ backgroundColor: '#27272a', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' }}
+                    >
+                      Copiar Código Pix Copia e Cola
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div style={{ padding: '20px', color: '#9ca3af', fontSize: '13px' }}>
+                  Clique no botão abaixo para gerar o QR Code Pix da sua assinatura.
+                </div>
+              )}
               <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.</p>
             </div>
           )}
 
           <button type="submit" disabled={carregando} style={{ width: '100%', backgroundColor: '#db2777', color: '#ffffff', fontWeight: 'bold', padding: '12px', borderRadius: '12px', marginTop: '8px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: carregando ? 0.5 : 1, boxShadow: '0 10px 15px -3px rgba(219, 39, 119, 0.3)' }}>
-            {carregando ? 'Processando Assinatura...' : 'Confirmar e Assinar R$ 69,90/mês'}
+            {carregando ? 'Gerando Pagamento...' : metodoPagamento === 'pix' ? 'Gerar QR Code Pix' : 'Confirmar e Assinar R$ 69,90/mês'}
           </button>
         </form>
 
