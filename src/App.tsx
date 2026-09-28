@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
+import { TelaPagamento } from './TelaPagamento';
 
 // ==========================================
 // ROTEAMENTO PRINCIPAL
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/painel" element={<TelaProprietaria />} />
       <Route path="/redefinir-senha" element={<TelaRedefinirSenha />} />
       <Route path="/assinatura-pendente" element={<TelaAssinaturaPendente />} />
+      <Route path="/pagamento" element={<TelaPagamento />} />
       <Route path="*" element={<TelaCliente />} />
     </Routes>
   );
