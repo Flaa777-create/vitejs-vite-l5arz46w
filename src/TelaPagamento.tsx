@@ -55,13 +55,13 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
       });
 
       const data = await response.json();
+      console.log("Resposta completa da API:", data); // <--- Vai mostrar tudo no F12 do navegador
 
-      if (data.success) {
+      if (response.ok && data.success !== false) {
         if (metodoPagamento === 'pix') {
-          // Ajuste conforme o retorno exato da sua Edge Function para o Pix (ex: data.pixQrCode, data.encodedImage, etc.)
           setDadosPix({
-            qrCodeUrl: data.qrCodeUrl || data.encodedImage,
-            copiaECola: data.copiaECola || data.payload
+            qrCodeUrl: data.qrCodeUrl || data.encodedImage || data.pixQrCode || data.image,
+            copiaECola: data.copiaECola || data.payload || data.pixCopyPaste
           });
           setCarregando(false);
         } else {
@@ -69,10 +69,12 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
           onSucesso(); 
         }
       } else {
-        alert(`❌ Erro no pagamento: ${data.error}`);
+        const mensagemErro = data.error || data.message || JSON.stringify(data);
+        alert(`❌ Erro no pagamento: ${mensagemErro}`);
         setCarregando(false);
       }
     } catch (err) {
+      console.error("Erro de conexão:", err);
       alert('❌ Falha ao conectar ao servidor de pagamento.');
       setCarregando(false);
     }
