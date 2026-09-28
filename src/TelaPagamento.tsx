@@ -50,8 +50,10 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'}`
+          'Authorization': 'Bearer sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0...', 
+          'apikey': 'sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0...' 
         },
+        body: JSON.stringify(dadosParaEnvio)
       });
 
       const data = await response.json();
