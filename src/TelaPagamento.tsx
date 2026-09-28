@@ -42,7 +42,6 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
     };
 
     try {
-      
       const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
         method: 'POST',
         headers: {
@@ -106,7 +105,7 @@ export function TelaPagamento({ userId, emailOriginal, onSucesso }: TelaPagament
             <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} className="w-full bg-[#121214] border border-gray-700 rounded-lg p-2 text-sm focus:border-pink-500 outline-none" placeholder="0000 0000 0000 0000" />
           </div>
 
-          <div className="grid grid-cols.3 grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <div>
               <label className="text-xs text-gray-400 block mb-1">Mês (MM)</label>
               <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} className="w-full bg-[#121214] border border-gray-700 rounded-lg p-2 text-sm focus:border-pink-500 outline-none" placeholder="05" />
