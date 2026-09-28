@@ -47,14 +47,14 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
 
     try {
       const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0...', 
-          'apikey': 'sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0...' 
-        },
-        body: JSON.stringify(dadosParaEnvio)
-      });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', 
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  },
+  body: JSON.stringify(dadosParaEnvio)
+});
 
       const data = await response.json();
       console.log("Resposta completa da API:", data); // <--- Vai mostrar tudo no F12 do navegador
