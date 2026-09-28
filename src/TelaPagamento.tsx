@@ -47,14 +47,12 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
 
     try {
       // Usamos a chave anon pública diretamente para garantir que a requisição passe sem barreiras de sessão
-      const supabaseAnonKey = "sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0..."; // Substitua pela sua chave publishable ou anon correta
+      const supabaseAnonKey = "sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0..."; 
 
       const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'apikey': supabaseAnonKey
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(dadosParaEnvio)
       });
