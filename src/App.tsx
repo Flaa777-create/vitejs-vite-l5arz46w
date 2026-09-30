@@ -847,23 +847,14 @@ export function TelaProprietaria() {
 
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', fontFamily: 'sans-serif', padding: '20px', color: '#fff', gap: '20px' }}>
-      
-      {/* MENU SUPERIOR (4 ABAS) */}
-<div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-  <button onClick={() => setAbaAtiva('financeiro')} style={{ backgroundColor: abaAtiva === 'financeiro' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Finanças</button>
-  <button onClick={() => setAbaAtiva('agendamentos')} style={{ backgroundColor: abaAtiva === 'agendamentos' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Agendamentos</button>
-  <button onClick={() => setAbaAtiva('configuracao')} style={{ backgroundColor: abaAtiva === 'configuracao' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Ajustes</button>
-  
-  {/* NOVO BOTÃO ADICIONADO AQUI */}
-  <button onClick={() => setAbaAtiva('cartao')} style={{ backgroundColor: abaAtiva === 'cartao' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>💳 Cartão</button>
-</div>
       <div style={{ width: '100%', maxWidth: '380px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#202024', padding: '10px 15px', borderRadius: '15px' }}>
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-          <button onClick={() => setAbaAtiva('financeiro')} style={{ backgroundColor: abaAtiva === 'financeiro' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>📊 Finanças</button>
-          <button onClick={() => setAbaAtiva('agendamentos')} style={{ backgroundColor: abaAtiva === 'agendamentos' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>🗓️ Agendamentos</button>
-          <button onClick={() => setAbaAtiva('configuracao')} style={{ backgroundColor: abaAtiva === 'configuracao' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>⚙️ Ajustes</button>
+          <button onClick={() => setAbaAtiva('financeiro')} style={{ backgroundColor: abaAtiva === 'financeiro' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>📊 Finanças</button>
+          <button onClick={() => setAbaAtiva('agendamentos')} style={{ backgroundColor: abaAtiva === 'agendamentos' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>🗓️ Agendas</button>
+          <button onClick={() => setAbaAtiva('configuracao')} style={{ backgroundColor: abaAtiva === 'configuracao' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>⚙️ Ajustes</button>
+          <button onClick={() => setAbaAtiva('cartao')} style={{ backgroundColor: abaAtiva === 'cartao' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>💳 Cartão</button>
         </div>
-        <button onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }} style={{ backgroundColor: 'transparent', border: '1px solid #ff4a7d', color: '#ff4a7d', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px' }}>Sair</button>
+        <button onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }} style={{ backgroundColor: 'transparent', border: '1px solid #ff4a7d', color: '#ff4a7d', padding: '6px 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px' }}>Sair</button>
       </div>
 
       {/* ABA FINANCEIRO */}
