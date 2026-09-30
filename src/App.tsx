@@ -3,6 +3,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
 import { TelaPagamento } from './TelaPagamento';
+import { TelaAlterarCartao } from './TelaAlterarCartao';
 
 // ==========================================
 // ROTEAMENTO PRINCIPAL
@@ -847,7 +848,15 @@ export function TelaProprietaria() {
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', fontFamily: 'sans-serif', padding: '20px', color: '#fff', gap: '20px' }}>
       
-      {/* MENU SUPERIOR (3 ABAS) */}
+      {/* MENU SUPERIOR (4 ABAS) */}
+<div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+  <button onClick={() => setAbaAtiva('financeiro')} style={{ backgroundColor: abaAtiva === 'financeiro' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Finanças</button>
+  <button onClick={() => setAbaAtiva('agendamentos')} style={{ backgroundColor: abaAtiva === 'agendamentos' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Agendamentos</button>
+  <button onClick={() => setAbaAtiva('configuracao')} style={{ backgroundColor: abaAtiva === 'configuracao' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>Ajustes</button>
+  
+  {/* NOVO BOTÃO ADICIONADO AQUI */}
+  <button onClick={() => setAbaAtiva('cartao')} style={{ backgroundColor: abaAtiva === 'cartao' ? '#ff4a7d' : 'transparent', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>💳 Cartão</button>
+</div>
       <div style={{ width: '100%', maxWidth: '380px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#202024', padding: '10px 15px', borderRadius: '15px' }}>
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           <button onClick={() => setAbaAtiva('financeiro')} style={{ backgroundColor: abaAtiva === 'financeiro' ? '#ff4a7d' : 'transparent', border: 'none', color: '#fff', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>📊 Finanças</button>
@@ -964,6 +973,12 @@ export function TelaProprietaria() {
         </div>
       )}
       {/* ABA CONFIGURAÇÕES */}
+      {/* ABA ATUALIZAR CARTÃO */}
+{abaAtiva === 'cartao' && (
+  <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+    <TelaAlterarCartao userId={userId || ''} />
+  </div>
+)}
       {abaAtiva === 'configuracao' && (
         <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
