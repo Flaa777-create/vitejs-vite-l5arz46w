@@ -568,7 +568,7 @@ export function TelaAssinaturaPendente() {
 // ==========================================
 export function TelaProprietaria() {
   const navigate = useNavigate();
-  
+  const [userAtual, setUserAtual] = useState<any>(null);
   const [novoNomeFuncionario, setNovoNomeFuncionario] = useState<string>('');
   const [novaEspecialidadeFuncionario, setNovaEspecialidadeFuncionario] = useState<string>('');
   
@@ -595,6 +595,13 @@ export function TelaProprietaria() {
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState<any>(null);
   const [valorRecebido, setValorRecebido] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('pix');
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUserAtual(user);
+      }
+    });
+  }, []);
 
   const [modalRemarcarAberto, setModalRemarcarAberto] = useState(false);
   const [novaData, setNovaData] = useState('');
