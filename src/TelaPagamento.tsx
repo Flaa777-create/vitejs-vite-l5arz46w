@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Inicializa o cliente do Supabase específico para escutar o tempo real na tela
+const supabaseUrl = "https://jehhyflawpcyhurpbzli.supabase.co";
+const supabaseAnonKey = "sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0..."; // Chave pública anônima do seu app
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface TelaPagamentoProps {
   userId?: string;
@@ -24,6 +30,42 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
   // Estados para exibir o Pix gerado pela API
   const [dadosPix, setDadosPix] = useState<{ qrCodeUrl?: string; copiaECola?: string } | null>(null);
 
+  // ========================================================
+  // SISTEMA DE TEMPO REAL: ATIVA O ACESSO ASSIM QUE O PIX CAI
+  // ========================================================
+  useEffect(() => {
+    if (!userId || metodoPagamento !== 'pix' || !dadosPix) return;
+
+    console.log("Iniciando escuta em tempo real para o usuário:", userId);
+
+    const canalStatus = supabase
+      .channel(`status-assinatura-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'salons',
+          filter: `owner_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log("Banco de dados alterado em tempo real:", payload.new);
+          
+          if (payload.new.subscription_status?.toLowerCase() === 'active') {
+            console.log("Pagamento detectado em tempo real! Liberando tela...");
+            alert('✨ Pagamento confirmado por PIX! Bem-vinda à GlowAgenda.');
+            onSucesso();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(canalStatus);
+    };
+  }, [userId, dadosPix, metodoPagamento, onSucesso]);
+  // ========================================================
+
   async function handleAssinar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando(true);
@@ -46,9 +88,6 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
     };
 
     try {
-      // Usamos a chave anon pública diretamente para garantir que a requisição passe sem barreiras de sessão
-      const supabaseAnonKey = "sb_publishable_V3sV8TkNI0Tvch-iQj3tvw_6UKn0..."; 
-
       const response = await fetch('https://jehhyflawpcyhurpbzli.supabase.co/functions/v1/bright-api', {
         method: 'POST',
         headers: {
@@ -168,46 +207,47 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
               <input type="text" required value={nomeCliente} onChange={e => setNomeCliente(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="Ex: Paula Souza" />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <div>
-                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CPF ou CNPJ</label>
-                <input type="text" required value={cpfCnpj} onChange={e => setCpfCnpj(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="Apenas números" />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>WhatsApp</label>
-                <input type="text" required value={telefone} onChange={e => setTelefone(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="(DDD) 99999-0000" />
-              </div>
+            <div>
+              <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CPF ou CNPJ</label>
+              <input type="text" required value={cpfCnpj} onChange={e => setCpfCnpj(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="Apenas números" />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>WhatsApp</label>
+              <input type="text" required value={telefone} onChange={e => setTelefone(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="(DDD) 99999-0000" />
             </div>
           </div>
 
           {metodoPagamento === 'cartao' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
               <div style={{ borderTop: '1px solid #27272a', paddingTop: '12px' }}>
-                <p style={{ fontSize: '11px', fontWeight: '600', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>💳 Dados do Cartão de Crédito</p>
-              </div>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 12px 0' }}>💳 Dados do Cartão de Crédito</p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Nome impresso no Cartão</label>
+                    <input type="text" required value={nomeTitular} onChange={e => setNomeTitular(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="COMO ESTÁ NO CARTÃO" />
+                  </div>
 
-              <div>
-                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Nome impresso no Cartão</label>
-                <input type="text" required value={nomeTitular} onChange={e => setNomeTitular(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="COMO ESTÁ NO CARTÃO" />
-              </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Número do Cartão</label>
+                    <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="0000 0000 0000 0000" />
+                  </div>
 
-              <div>
-                <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Número do Cartão</label>
-                <input type="text" required value={numeroCartao} onChange={e => setNumeroCartao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="0000 0000 0000 0000" />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                <div>
-                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Mês (MM)</label>
-                  <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="05" />
-                </div>
-                <div>
-                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Ano (AAAA)</label>
-                  <input type="text" required maxLength={4} value={anoExpiracao} onChange={e => setAnoExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="2030" />
-                </div>
-                <div>
-                  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CVV</label>
-                  <input type="text" required maxLength={4} value={cvv} onChange={e => setCvv(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="123" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Mês (MM)</label>
+                      <input type="text" required maxLength={2} value={mesExpiracao} onChange={e => setMesExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="05" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>Ano (AAAA)</label>
+                      <input type="text" required maxLength={4} value={anoExpiracao} onChange={e => setAnoExpiracao(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="2030" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '4px' }}>CVV</label>
+                      <input type="text" required maxLength={4} value={cvv} onChange={e => setCvv(e.target.value)} style={{ width: '100%', backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '13px', outline: 'none', color: '#ffffff', boxSizing: 'border-box' }} placeholder="123" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -215,10 +255,14 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
             <div style={{ backgroundColor: '#121215', border: '1px solid #27272a', borderRadius: '12px', padding: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {dadosPix?.qrCodeUrl ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                  <img src={dadosPix.qrCodeUrl.startsWith('http') ? dadosPix.qrCodeUrl : `data:image/png;base64,${dadosPix.qrCodeUrl}`} alt="QR Code Pix" style={{ width: '160px', height: '160px', borderRadius: '8px', background: '#fff', padding: '8px' }} />
+                  <img 
+                    src={dadosPix.qrCodeUrl.startsWith('http') ? dadosPix.qrCodeUrl : `data:image/png;base64,${dadosPix.qrCodeUrl}`} 
+                    alt="QR Code Pix" 
+                    style={{ width: '160px', height: '160px', borderRadius: '8px', background: '#fff', padding: '8px' }} 
+                  />
                   {dadosPix.copiaECola && (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => { navigator.clipboard.writeText(dadosPix.copiaECola!); alert('📋 Código Pix Copia e Cola copiado!'); }}
                       style={{ backgroundColor: '#27272a', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' }}
                     >
@@ -231,18 +275,24 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
                   Clique no botão abaixo para gerar o QR Code Pix da sua assinatura.
                 </div>
               )}
-              <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.</p>
+              <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>
+                Escaneie o QR Code com o aplicativo do seu banco. A liberação do SaaS é imediata após a compensação.
+              </p>
             </div>
           )}
 
-          <button type="submit" disabled={carregando} style={{ width: '100%', backgroundColor: '#db2777', color: '#ffffff', fontWeight: 'bold', padding: '12px', borderRadius: '12px', marginTop: '8px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: carregando ? 0.5 : 1, boxShadow: '0 10px 15px -3px rgba(219, 39, 119, 0.3)' }}>
+          <button 
+            type="submit" 
+            disabled={carregando} 
+            style={{ width: '100%', backgroundColor: '#db2777', color: '#ffffff', fontWeight: 'bold', padding: '12px', borderRadius: '12px', marginTop: '8px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: carregando ? 0.5 : 1, boxShadow: '0 10px 15px -3px rgba(219, 39, 119, 0.3)' }}
+          >
             {carregando ? 'Gerando Pagamento...' : metodoPagamento === 'pix' ? 'Gerar QR Code Pix' : 'Confirmar e Assinar R$ 69,90/mês'}
           </button>
-        </form>
 
-        <p style={{ textAlign: 'center', fontSize: '11px', color: '#6b7280', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-          🔒 Pagamento processado com segurança via Asaas
-        </p>
+          <p style={{ textAlign: 'center', fontSize: '11px', color: '#6b7280', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '16px 0 0 0' }}>
+            🔒 Pagamento processado com segurança via Asaas
+          </p>
+        </form>
       </div>
     </div>
   );
