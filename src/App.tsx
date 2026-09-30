@@ -967,7 +967,7 @@ export function TelaProprietaria() {
       {/* ABA ATUALIZAR CARTÃO */}
 {abaAtiva === 'cartao' && (
   <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
-    <TelaAlterarCartao userId={userId || ''} />
+    <TelaAlterarCartao userId={userAtual?.id || ''} />
   </div>
 )}
       {abaAtiva === 'configuracao' && (
