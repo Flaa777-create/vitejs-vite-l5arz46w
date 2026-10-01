@@ -4,6 +4,7 @@ import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
 import { TelaPagamento } from './TelaPagamento';
 import { TelaAlterarCartao } from './TelaAlterarCartao';
+import { useParams } from ' react-router-dom';
 
 // ==========================================
 // ROTEAMENTO PRINCIPAL
@@ -11,7 +12,7 @@ import { TelaAlterarCartao } from './TelaAlterarCartao';
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<TelaCliente />} />
+      <Route path="/ :ownerID" element={<TelaCliente />} />
       <Route path="/login" element={<TelaAuth />} />
       <Route path="/painel" element={<TelaProprietaria />} />
       <Route path="/redefinir-senha" element={<TelaRedefinirSenha />} />
@@ -26,6 +27,7 @@ export default function App() {
 // 1. TELA DA CLIENTE (PUBLICA / CATÁLOGO)
 // ==========================================
 export function TelaCliente() {
+  const { ownerId } = useParams<{ ownerId: string }>();
   const [nomeCliente, setNomeCliente] = useState('');
   const [whatsappCliente, setWhatsappCliente] = useState('');
   
@@ -58,7 +60,15 @@ export function TelaCliente() {
   });
 
   const carregarDadosPublicos = useCallback(async () => {
-    const { data: salonData } = await supabase.from('salons').select('*').limit(1).single();
+    if (!ownerId) return;
+
+    const { data: salonData } = await supabase
+    .from('salons')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .limit(1)
+    .single();
+
     if (salonData) {
       setSalonOwnerId(salonData.owner_id || null);
       setConfSalao({
@@ -66,25 +76,24 @@ export function TelaCliente() {
         fechamento: salonData.hora_fechamento || '18:00',
         almocoInicio: salonData.almoco_inicio || '12:00',
         almocoFim: salonData.almoco_fim || '13:00',
-        whatsappProfissional: salonData.whatsapp_profissional || '5511999999999'
+        whatsappProfissional: salonData.whatsapp_profissional || '+55 (11) 999999999'
       });
       if (salonData.chave_pix_sinal) setChavePixSinal(salonData.chave_pix_sinal);
       if (salonData.cobrar_sinal !== undefined) setCobrarSinalConfig(Boolean(salonData.cobrar_sinal));
 
       let queryServ = supabase.from('servicos').select('*').order('nome_servico', { ascending: true });
-      if (salonData.owner_id) {
-        queryServ = queryServ.eq('owner_id', salonData.owner_id);
-      }
+      queryServ = queryServ.eq('owner_id', ownerId);
+
       const { data: servs } = await queryServ;
-      if (servs) setServicosDoSalao(servs);
+      if (servs) setServicosDosSalao(servs);
 
       let queryFunc = supabase.from('funcionarios').select('*');
-      if (salonData.owner_id) {
-        queryFunc = queryFunc.eq('owner_id', salonData.owner_id);
-      }
-      const { data: funcs } = await queryFunc;
-      if (funcs) setFuncionarios(funcs);
-    }
+      queryFunc = queryFunc.eq('owner_id', ownerID);
+
+      const { data: funs } = await queryFunc;
+      if (funcs) setFuncionarios(funs);
+     [ownerId]; 
+     }
   }, []);
 
   useEffect(() => {
@@ -1012,13 +1021,13 @@ export function TelaProprietaria() {
     <input 
       type="text" 
       readOnly 
-      value={`https://vercel.app{salonData?.id || user?.id}`} 
+      value={`https://vercel.app{salonData?.owner_id || user?.uid}`} 
       style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
     />
     <button 
       type="button"
       onClick={() => {
-        navigator.clipboard.writeText(`https://vercel.app{salonData?.id || user?.id}`);
+        navigator.clipboard.writeText(`https://vercel.app{salonData?.owner_id || user?.uid}`);
         alert('📋 Link de agendamento copiado com sucesso!');
       }}
       style={{ backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
