@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
 import { TelaPagamento } from './TelaPagamento';
 import { TelaAlterarCartao } from './TelaAlterarCartao';
-import { useParams } from ' react-router-dom';
 
 // ==========================================
 // ROTEAMENTO PRINCIPAL
@@ -26,6 +26,7 @@ export default function App() {
 // ==========================================
 // 1. TELA DA CLIENTE (PUBLICA / CATÁLOGO)
 // ==========================================
+
 export function TelaCliente() {
   const { ownerId } = useParams<{ ownerId: string }>();
   const [nomeCliente, setNomeCliente] = useState('');
