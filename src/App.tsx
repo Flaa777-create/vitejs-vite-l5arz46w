@@ -1003,6 +1003,30 @@ export function TelaProprietaria() {
                 {salvandoConfigSalao ? 'Salvando Configurações...' : '💾 Salvar Horários, WhatsApp e Chave PIX'}
               </button>
             </div>
+            {/* LINK DE AGENDAMENTO PARA O INSTAGRAM */}
+<div style={{ marginTop: '16px', backgroundColor: '#121215', padding: '16px', borderRadius: '8px', border: '1px solid #27272a' }}>
+  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>
+    🔗 Seu Link de Agendamento (Cole no Instagram/WhatsApp)
+  </label>
+  <div style={{ display: 'flex', gap: '8px' }}>
+    <input 
+      type="text" 
+      readOnly 
+      value={`https://vercel.app{salonData?.id || user?.id}`} 
+      style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
+    />
+    <button 
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(`https://vercel.app{salonData?.id || user?.id}`);
+        alert('📋 Link de agendamento copiado com sucesso!');
+      }}
+      style={{ backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+    >
+      Copiar
+    </button>
+  </div>
+</div>
 
             <div style={{ marginTop: '15px', borderTop: '1px solid #ddd', paddingTop: '15px', textAlign: 'left', color: '#333' }}>
               <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>👥 Gerenciar Equipe</h4>
