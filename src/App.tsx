@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Routes, Routes, Route} from 'react-router-dom;'
-import { useParams } from 'react-router-dom';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import { CreditCard, QrCode, CheckCircle2, ShieldCheck, Lock } from 'lucide-react';
