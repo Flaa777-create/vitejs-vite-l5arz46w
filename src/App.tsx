@@ -12,7 +12,7 @@ export default function App() {
   return (
     <Routes>
 
-      <Route path="/ :ownerId?" element={<TelaCliente />} />
+      <Route path="/:ownerId?" element={<TelaCliente />} />
       <Route path="/login" element={<TelaAuth />} />
       <Route path="/painel" element={<TelaProprietaria />} />
       <Route path="/redefinir-senha" element={<TelaRedefinirSenha />} />
@@ -89,13 +89,14 @@ export function TelaCliente() {
       if (servs) setServicosDosSalao(servs);
 
       let queryFunc = supabase.from('funcionarios').select('*');
-      queryFunc = queryFunc.eq('owner_id', ownerID);
+      queryFunc = queryFunc.eq('owner_id', ownerId);
 
       const { data: funs } = await queryFunc;
-      if (funcs) setFuncionarios(funs);
-     [ownerId]; 
+      if (funs) {
+        setFuncionarios(funs);
+      }
      }
-  }, []);
+  }, [ownerId]); 
 
   useEffect(() => {
     carregarDadosPublicos();
@@ -594,7 +595,7 @@ export function TelaProprietaria() {
   const [listaServicos, setListaServicos] = useState<any[]>([]);
   const [historicoAgendamentos, setHistoricoAgendamentos] = useState<any[]>([]);
   
-  const [abaAtiva, setAbaAtiva] = useState<'financeiro' | 'agendamentos' | 'configuracao'>('agendamentos');
+  const [abaAtiva, setAbaAtiva] = useState<'financeiro' | 'agendamentos' | 'configuracao'| 'cartao'>('agendamentos');
   const [idServicoSendoEditado, setIdServicoSendoEditado] = useState<string | null>(null);
 
   const [cobrarSinal, setCobrarSinal] = useState<boolean>(false);
@@ -1022,13 +1023,14 @@ export function TelaProprietaria() {
     <input 
       type="text" 
       readOnly 
-      value={`https:glow-agenda-sand.vercel.app/${salonData?.owner_id || user?.id}`} 
+      value={`https://glow-agenda-sand.vercel.app/${currentOwnerId || ''}`} 
       style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
     />
     <button 
       type="button"
       onClick={() => {
-        navigator.clipboard.writeText(`https://glow-agenda-sand.vercel.app/${salonData?.owner_id || user?.id}`);
+        const link = `https://glow-agenda-sand.vercel.app/${currentOwnerId || ''}`;
+        navigator.clipboard.writeText(link);
         alert('📋 Link de agendamento copiado com sucesso!');
       }}
       style={{ backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
