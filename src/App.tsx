@@ -59,44 +59,80 @@ export function TelaCliente() {
     almocoFim: '13:00',
     whatsappProfissional: '5511999999999'
   });
-
   const carregarDadosPublicos = useCallback(async () => {
     if (!ownerId) return;
-
-    const { data: salonData } = await supabase
-    .from('salons')
-    .select('*')
-    .eq('owner_id', ownerId)
-    .limit(1)
-    .single();
-
+  
+    console.log('🔎 OWNER ID DO LINK PÚBLICO:', ownerId);
+  
+    const { data: salonData, error: salonError } = await supabase
+      .from('salons')
+      .select('*')
+      .eq('owner_id', ownerId)
+      .limit(1)
+      .single();
+  
+    console.log('🏠 SALÃO ENCONTRADO:', salonData);
+    console.log('❌ ERRO SALÃO:', salonError);
+  
     if (salonData) {
       setSalonOwnerId(salonData.owner_id || null);
+  
       setConfSalao({
         abertura: salonData.hora_abertura || '08:00',
         fechamento: salonData.hora_fechamento || '18:00',
         almocoInicio: salonData.almoco_inicio || '12:00',
         almocoFim: salonData.almoco_fim || '13:00',
-        whatsappProfissional: salonData.whatsapp_profissional || '+55 (11) 999999999'
+        whatsappProfissional:
+          salonData.whatsapp_profissional || '+55 (11) 999999999'
       });
-      if (salonData.chave_pix_sinal) setChavePixSinal(salonData.chave_pix_sinal);
-      if (salonData.cobrar_sinal !== undefined) setCobrarSinalConfig(Boolean(salonData.cobrar_sinal));
-
-      let queryServ = supabase.from('servicos').select('*').order('nome_servico', { ascending: true });
-      queryServ = queryServ.eq('owner_id', ownerId);
-
-      const { data: servs } = await queryServ;
-      if (servs) setServicosDosSalao(servs);
-
-      let queryFunc = supabase.from('funcionarios').select('*');
-      queryFunc = queryFunc.eq('owner_id', ownerId);
-
-      const { data: funs } = await queryFunc;
+  
+      // Nome do salão
+      if (salonData.nome_salao) {
+        console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
+      }
+  
+      if (salonData.chave_pix_sinal) {
+        setChavePixSinal(salonData.chave_pix_sinal);
+      }
+  
+      if (salonData.cobrar_sinal !== undefined) {
+        setCobrarSinalConfig(Boolean(salonData.cobrar_sinal));
+      }
+  
+      // =========================
+      // BUSCAR SERVIÇOS
+      // =========================
+  
+      const { data: servs, error: servicosError } = await supabase
+        .from('servicos')
+        .select('*')
+        .eq('owner_id', ownerId)
+        .order('nome_servico', { ascending: true });
+  
+      console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
+      console.log('❌ ERRO SERVIÇOS:', servicosError);
+  
+      if (servs) {
+        setServicosDosSalao(servs);
+      }
+  
+      // =========================
+      // BUSCAR FUNCIONÁRIOS
+      // =========================
+  
+      const { data: funs, error: funcionariosError } = await supabase
+        .from('funcionarios')
+        .select('*')
+        .eq('owner_id', ownerId);
+  
+      console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
+      console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
+  
       if (funs) {
         setFuncionarios(funs);
       }
-     }
-  }, [ownerId]); 
+    }
+  }, [ownerId]);
 
   useEffect(() => {
     carregarDadosPublicos();
