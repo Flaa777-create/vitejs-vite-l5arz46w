@@ -47,6 +47,7 @@ export function TelaCliente() {
   const [chavePixSinal, setChavePixSinal] = useState('Chave PIX não configurada');
   const [cobrarSinalConfig, setCobrarSinalConfig] = useState(false);
   const [salonOwnerId, setSalonOwnerId] = useState<string | null>(null);
+  const [nomeSalao, setNomeSalao] = useState('Studio');
 
   const [gradeHorarios, setGradeHorarios] = useState<string[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
@@ -73,9 +74,16 @@ export function TelaCliente() {
   
     console.log('🏠 SALÃO ENCONTRADO:', salonData);
     console.log('❌ ERRO SALÃO:', salonError);
+    
   
     if (salonData) {
+    console.log('✅ ENTROU NO IF SALONDATA');
+    console.log('🏷️ OWNER ID DO SALÃO:', salonData.owner_id);
+    console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
+    
       setSalonOwnerId(salonData.owner_id || null);
+
+      setNomeSalao(salonData.nome_salao || 'Studio');
   
       setConfSalao({
         abertura: salonData.hora_abertura || '08:00',
@@ -109,8 +117,9 @@ export function TelaCliente() {
         .eq('owner_id', ownerId)
         .order('nome_servico', { ascending: true });
   
-      console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
-      console.log('❌ ERRO SERVIÇOS:', servicosError);
+        console.log('🔎 OWNER ID USADO PARA SERVIÇOS:', ownerId);
+        console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
+        console.log('❌ ERRO SERVIÇOS:', servicosError);
   
       if (servs) {
         setServicosDosSalao(servs);
@@ -125,8 +134,9 @@ export function TelaCliente() {
         .select('*')
         .eq('owner_id', ownerId);
   
-      console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
-      console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
+        console.log('🔎 OWNER ID USADO PARA FUNCIONÁRIOS:', ownerId);
+        console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
+        console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
   
       if (funs) {
         setFuncionarios(funs);
@@ -278,7 +288,7 @@ export function TelaCliente() {
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
       <div style={{ width: '100%', maxWidth: '380px', backgroundColor: '#fff0f3', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
-        <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 5px 0', fontSize: '24px' }}>✨ Studio ✨</h2>
+        <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 5px 0', fontSize: '24px' }}>✨ {nomeSalao} ✨</h2>
         <p style={{ textAlign: 'center', color: '#666', fontSize: '14px', margin: '0 0 20px 0' }}>Agende seus momentos de beleza</p>
         
         <form onSubmit={confirmarAgendamento}>
