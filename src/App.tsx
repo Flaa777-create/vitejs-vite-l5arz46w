@@ -1069,7 +1069,7 @@ export function TelaProprietaria() {
     <input 
       type="text" 
       readOnly 
-      value={`https://glow-agenda-sand.vercel.app/${userAtaul?.id || ''}`}
+      value={`https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`}
       style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
     />
     <button 
