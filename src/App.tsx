@@ -80,7 +80,7 @@ export function TelaCliente() {
     console.log('✅ ENTROU NO IF SALONDATA');
     console.log('🏷️ OWNER ID DO SALÃO:', salonData.owner_id);
     console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
-    
+
       setSalonOwnerId(salonData.owner_id || null);
 
       setNomeSalao(salonData.nome_salao || 'Studio');
@@ -1069,7 +1069,7 @@ export function TelaProprietaria() {
     <input 
       type="text" 
       readOnly 
-      value={`https://glow-agenda-sand.vercel.app/${currentOwnerId || ''}`} 
+      value={`https://glow-agenda-sand.vercel.app/${currentOwnerId || ''}`}
       style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
     />
     <button 
