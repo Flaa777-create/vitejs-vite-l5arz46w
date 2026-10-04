@@ -29,6 +29,7 @@ export default function App() {
 
 export function TelaCliente() {
   const { ownerId } = useParams<{ ownerId: string }>();
+  console.log("VALOR RECEBIDO DO OWNERID:", ownerId);
   const [nomeCliente, setNomeCliente] = useState('');
   const [whatsappCliente, setWhatsappCliente] = useState('');
   
