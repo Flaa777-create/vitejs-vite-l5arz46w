@@ -123,7 +123,7 @@ export function TelaCliente() {
         console.log('❌ ERRO SERVIÇOS:', servicosError);
   
       if (servs) {
-        setServicosDosSalao(servs);
+        setServicosDoSalao(servs);
       }
   
       // =========================
