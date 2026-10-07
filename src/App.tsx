@@ -632,6 +632,15 @@ export function TelaProprietaria() {
   const [novaEspecialidadeFuncionario, setNovaEspecialidadeFuncionario] = useState<string>('');
   const [filtroPeriodo, setFiltroPeriodo] = useState<'hoje' | 'mes'>('hoje');
   const [mesSelecionado, setMesSelecionado] = useState('10-2026');
+  const [subAbaAjustes, setSubAbaAjustes] = useState<'geral' | 'equipe' | 'servicos'>('geral');
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
+
+function dispararFeedback(mensagem: string) {
+  setMensagemSucesso(mensagem);
+  setTimeout(() => {
+    setMensagemSucesso('');
+  }, 3500);
+}
   
   const [nomeServico, setNomeServico] = useState('');
   const [precoServico, setPrecoServico] = useState('');
@@ -922,7 +931,6 @@ const lancamentosFiltrados = lancamentosConcluidos.filter(item => {
 const totalComissaoMes = totalComissaoParceiras;
 
   const caixaLiquidoPrincipalSalao = entradasHoje - totalComissaoParceiras;
-
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', fontFamily: 'sans-serif', padding: '20px', color: '#fff', gap: '20px' }}>
       <div style={{ width: '100%', maxWidth: '380px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#202024', padding: '10px 15px', borderRadius: '15px' }}>
@@ -940,80 +948,80 @@ const totalComissaoMes = totalComissaoParceiras;
         <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <h3 style={{ margin: '5px 0 0 0', color: '#fff', fontSize: '16px' }}>📊 Tela de Caixa e Financeiro</h3>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
-  <button 
-    onClick={() => setFiltroPeriodo('hoje')}
-    style={{
-      flex: 1,
-      minWidth: '80px',
-      padding: '8px',
-      borderRadius: '6px',
-      border: 'none',
-      backgroundColor: filtroPeriodo === 'hoje' ? '#4caf50' : '#29292e',
-      color: '#fff',
-      fontWeight: 'bold',
-      cursor: 'pointer'
-    }}
-  >
-    Hoje
-  </button>
-  
-  <button 
-    onClick={() => setFiltroPeriodo('mes')}
-    style={{
-      flex: 1,
-      minWidth: '95px',
-      padding: '8px',
-      borderRadius: '6px',
-      border: 'none',
-      backgroundColor: filtroPeriodo === 'mes' ? '#4caf50' : '#29292e',
-      color: '#fff',
-      fontWeight: 'bold',
-      cursor: 'pointer'
-    }}
-  >
-    Este Mês
-  </button>
+            <button 
+              onClick={() => setFiltroPeriodo('hoje')}
+              style={{
+                flex: 1,
+                minWidth: '80px',
+                padding: '8px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: filtroPeriodo === 'hoje' ? '#4caf50' : '#29292e',
+                color: '#fff',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Hoje
+            </button>
+            
+            <button 
+              onClick={() => setFiltroPeriodo('mes')}
+              style={{
+                flex: 1,
+                minWidth: '95px',
+                padding: '8px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: filtroPeriodo === 'mes' ? '#4caf50' : '#29292e',
+                color: '#fff',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Este Mês
+            </button>
 
-  {/* Seletor de Mês/Ano para auditoria de qualquer mês passado */}
-  <input 
-    type="month" 
-    value={mesSelecionado} 
-    onChange={(e) => {
-      setMesSelecionado(e.target.value);
-      setFiltroPeriodo('mes');
-    }}
-    style={{ 
-      backgroundColor: '#29292e', 
-      color: '#fff', 
-      padding: '7px 8px', 
-      borderRadius: '6px', 
-      border: '1px solid #4caf50', 
-      cursor: 'pointer',
-      fontSize: '13px'
-    }}
-  />
-</div>
+            {/* Seletor de Mês/Ano para auditoria de qualquer mês passado */}
+            <input 
+              type="month" 
+              value={mesSelecionado} 
+              onChange={(e) => {
+                setMesSelecionado(e.target.value);
+                setFiltroPeriodo('mes');
+              }}
+              style={{ 
+                backgroundColor: '#29292e', 
+                color: '#fff', 
+                padding: '7px 8px', 
+                borderRadius: '6px', 
+                border: '1px solid #4caf50', 
+                cursor: 'pointer',
+                fontSize: '13px'
+              }}
+            />
+          </div>
 
-{/* Card de Total de Entradas (dinâmico conforme o período ou mês selecionado) */}
-<div style={{ backgroundColor: '#29292e', padding: '15px', borderRadius: '8px', borderLeft: '5px solid #4caf50' }}>
-  <p style={{ margin: 0, fontSize: '13px', color: '#aaa' }}>
-    Total de Entradas ({filtroPeriodo === 'hoje' ? 'Hoje' : `Mês: ${mesSelecionado}`}):
-  </p>
-  <h2 style={{ margin: '5px 0 0 0', color: '#4caf50', fontSize: '20px' }}>
-    R$ {filtroPeriodo === 'hoje' ? entradasHoje.toFixed(2) : entradasMes.toFixed(2)}
-  </h2>
-</div>
+          {/* Card de Total de Entradas (dinâmico conforme o período ou mês selecionado) */}
+          <div style={{ backgroundColor: '#29292e', padding: '15px', borderRadius: '8px', borderLeft: '5px solid #4caf50' }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#aaa' }}>
+              Total de Entradas ({filtroPeriodo === 'hoje' ? 'Hoje' : `Mês: ${mesSelecionado}`}):
+            </p>
+            <h2 style={{ margin: '5px 0 0 0', color: '#4caf50', fontSize: '20px' }}>
+              R$ {filtroPeriodo === 'hoje' ? entradasHoje.toFixed(2) : entradasMes.toFixed(2)}
+            </h2>
+          </div>
 
-<div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-  <div style={{ backgroundColor: '#29292e', padding: '15px', borderRadius: '8px', borderLeft: '5px solid #4caf50' }}>
-    <p style={{ margin: 0, fontSize: '13px', color: '#aaa' }}>
-      Total de Atendimentos ({filtroPeriodo === 'hoje' ? 'Hoje' : 'No Período'}): {totalAgendamentos}
-    </p>
-    <h2 style={{ margin: '5px 0 0 0', color: '#4caf50', fontSize: '20px' }}>
-      R$ {filtroPeriodo === 'hoje' ? entradasHoje.toFixed(2) : entradasMes.toFixed(2)}
-    </h2>
-  </div>
-</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+            <div style={{ backgroundColor: '#29292e', padding: '15px', borderRadius: '8px', borderLeft: '5px solid #4caf50' }}>
+              <p style={{ margin: 0, fontSize: '13px', color: '#aaa' }}>
+                Total de Atendimentos ({filtroPeriodo === 'hoje' ? 'Hoje' : 'No Período'}): {totalAgendamentos}
+              </p>
+              <h2 style={{ margin: '5px 0 0 0', color: '#4caf50', fontSize: '20px' }}>
+                R$ {filtroPeriodo === 'hoje' ? entradasHoje.toFixed(2) : entradasMes.toFixed(2)}
+              </h2>
+            </div>
+          </div>
           <h3 style={{ margin: '15px 0 0 0', color: '#fff', fontSize: '16px' }}>📑 Extrato de Lançamentos</h3>
           <div style={{ backgroundColor: '#29292e', borderRadius: '8px', padding: '12px', width: '100%', boxSizing: 'border-box' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -1058,260 +1066,383 @@ const totalComissaoMes = totalComissaoParceiras;
                 <span style={{ color: '#ff4a7d' }}>R$ {totalComissaoParceiras.toFixed(2)}</span>
               </div>
             </div>
-
-           </div>
+          </div>
         </div>
       )}
 
       {/* ABA AGENDAMENTOS */}
-{abaAtiva === 'agendamentos' && (
-  <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <div style={{ backgroundColor: '#29292e', borderRadius: '20px', padding: '20px' }}>
-      <h3 style={{ color: '#fff', margin: '0 0 15px 0', fontSize: '16px', fontWeight: 'bold' }}>🗓️ Próximos Agendamentos</h3>
-      {proximosAgendamentos.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '20px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '36px' }}>✨</span>
-          <div>
-            <p style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0' }}>Sua agenda está livre!</p>
-            <p style={{ color: '#888', fontSize: '12px', margin: 0, lineHeight: '1.4' }}>Compartilhe seu link de agendamento no Instagram para atrair novas clientes.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              const link = `https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`;
-              navigator.clipboard.writeText(link);
-              alert('📋 Link de agendamento copiado com sucesso!');
-            }}
-            style={{
-              backgroundColor: '#ff4a7d',
-              color: '#fff',
-              border: 'none',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              marginTop: '6px',
-              boxShadow: '0px 4px 10px rgba(255, 74, 125, 0.3)'
-            }}
-          >
-            🔗 Copiar Link para o Instagram
-          </button>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {proximosAgendamentos.map((agend) => (
-            <div key={agend.id} style={{ backgroundColor: '#121214', padding: '12px', borderRadius: '10px', border: '1px solid #333' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {agend.nome_cliente}
-                {verificarClienteVIP(agend.nome_cliente, historicoAgendamentos) && (
-                  <span style={{ backgroundColor: '#fff0f5', color: '#ff4a7d', fontSize: '11px', padding: '2px 6px', borderRadius: '20px', border: '1px solid #ffb6c1', fontWeight: 'bold' }}>
-                    ⭐ VIP
-                  </span>
-                )}
-              </div>
-              <div style={{ fontSize: '12px', color: '#aaa', marginTop: '4px' }}>📞 {agend.whatsapp_cliente || 'N/A'}</div>
-              <div style={{ fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold', marginTop: '4px' }}>📅 {agend.data_hora ? new Date(agend.data_hora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Data inválida'}</div>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #222' }}>
-                <button onClick={() => dispararLembreteWhats(agend)} style={{ backgroundColor: '#25D366', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>💬</button>
-                <button onClick={() => { setAgendamentoSelecionado(agend); setValorRecebido('120.00'); setModalBaixaAberto(true); }} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
-                <button onClick={() => { setAgendamentoSelecionado(agend); setModalRemarcarAberto(true); }} style={{ flex: 1, backgroundColor: '#d97706', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>📅 Remarcar</button>
-                <button onClick={() => deletarAgendamento(agend.id)} style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-)}    
-      {/* ABA CONFIGURAÇÕES */}
-      {/* ABA ATUALIZAR CARTÃO */}
-{abaAtiva === 'cartao' && (
-  <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
-    <TelaAlterarCartao userId={userAtual?.id || ''} />
-  </div>
-)}
-     {abaAtiva === 'configuracao' && (
-  <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
-      <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
-        {idServicoSendoEditado ? '📝 Editar Serviço' : 'Configurar meu Studio'}
-      </h2>
-      
-      <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5' }}>
-        
-        {/* Nome do Salão/ Studio */}
-        <div style={{ marginBottom: '16px', textAlign: 'left' }}>
-          <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Nome do Salão / Studio</span>
-          <input 
-            type="text" 
-            value={nomeSalao} 
-            onChange={(e) => setNomeSalao(e.target.value)} 
-            placeholder="Ex: Studio Bella" 
-            style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} 
-          />
-        </div>
-
-        <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#d6336c', marginBottom: '12px', textAlign: 'center' }}>⏰ Horário de Funcionamento</div>
-        
-        {/* Grade de Horários (com type="time" seguro) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '15px' }}>
-          <div>
-            <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Abertura</span>
-            <input type="time" value={horaAbertura} onChange={(e) => setHoraAbertura(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-          </div>
-          <div>
-            <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Fechamento</span>
-            <input type="time" value={horaFechamento} onChange={(e) => setHoraFechamento(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-          </div>
-          <div>
-            <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Almoço Início</span>
-            <input type="time" value={almocoInicio} onChange={(e) => setAlmocoInicio(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-          </div>
-          <div>
-            <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Almoço Fim</span>
-            <input type="time" value={almocoFim} onChange={(e) => setAlmocoFim(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-          </div>
-        </div>
-
-        {/* WhatsApp */}
-        <div style={{ marginBottom: '15px', textAlign: 'left' }}>
-          <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>WhatsApp do Salão (com DDD)</span>
-          <input type="text" value={whatsappProfissional} onChange={(e) => setWhatsappProfissional(e.target.value)} placeholder="Ex: 11999999999" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-        </div>
-
-        {/* Checkbox de Sinal */}
-        <div style={{ marginBottom: '15px', textAlign: 'left', backgroundColor: '#ffe6ed', padding: '10px', borderRadius: '8px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', color: '#333' }}>
-            <input type="checkbox" checked={cobrarSinal} onChange={(e) => setCobrarSinal(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#ff4a7d' }} /> 
-            Cobrar sinal de R$ 20,00?
-          </label>
-        </div>
-
-        {/* Chave PIX condicional */}
-        {cobrarSinal && (
-          <div style={{ marginBottom: '15px', textAlign: 'left' }}>
-            <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Sua Chave PIX:</span>
-            <input type="text" value={chavePixSinal} onChange={(e) => setChavePixSinal(e.target.value)} placeholder="Ex: CPF, Telefone ou Chave Aleatória" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
-          </div>
-        )}
-        
-        {/* Botão de Salvar */}
-        <button 
-          type="button" 
-          onClick={salvarConfiguracoesGlobais}
-          disabled={salvandoConfigSalao}
-          style={{ width: '100%', padding: '13px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px', boxShadow: '0px 4px 10px rgba(0,0,0,0.2)' }}
-        >
-          {salvandoConfigSalao ? 'Salvando Configurações...' : '💾 Salvar Alterações'}
-        </button>
-      </div>
-     
-            {/* LINK DE AGENDAMENTO PARA O INSTAGRAM */}
-<div style={{ marginTop: '16px', backgroundColor: '#121215', padding: '16px', borderRadius: '8px', border: '1px solid #27272a' }}>
-  <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>
-    🔗 Seu Link de Agendamento (Cole no Instagram/WhatsApp)
-  </label>
-  <div style={{ display: 'flex', gap: '8px' }}>
-    <input 
-      type="text" 
-      readOnly 
-      value={`https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`}
-      style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
-    />
-    <button 
-      type="button"
-      onClick={() => {
-        const link = `https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`;
-        navigator.clipboard.writeText(link);
-        alert('📋 Link de agendamento copiado com sucesso!');
-      }}
-      style={{ backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
-    >
-      Copiar
-    </button>
-  </div>
-</div>
-
-            <div style={{ marginTop: '15px', borderTop: '1px solid #ddd', paddingTop: '15px', textAlign: 'left', color: '#333' }}>
-              <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>👥 Gerenciar Equipe</h4>
-              <div style={{ display: 'flex', gap: '8px', flexDirection: 'column', marginBottom: '15px' }}>
-                <input 
-                  type="text" 
-                  value={novoNomeFuncionario} 
-                  onChange={(e) => setNovoNomeFuncionario(e.target.value)} 
-                  placeholder="Nome da Profissional (Ex: Paula)" 
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '13px' }} 
-                />
-                <input 
-                  type="text" 
-                  value={novaEspecialidadeFuncionario} 
-                  onChange={(e) => setNovaEspecialidadeFuncionario(e.target.value)} 
-                  placeholder="O que ela faz? (Ex: Sobrancelha, Cílios)" 
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '13px' }} 
-                />
-                <button 
-                  type="button" 
-                  onClick={cadastrarFuncionario} 
-                  style={{ padding: '10px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
+      {abaAtiva === 'agendamentos' && (
+        <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ backgroundColor: '#29292e', borderRadius: '20px', padding: '20px' }}>
+            <h3 style={{ color: '#fff', margin: '0 0 15px 0', fontSize: '16px', fontWeight: 'bold' }}>🗓️ Próximos Agendamentos</h3>
+            {proximosAgendamentos.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '36px' }}>✨</span>
+                <div>
+                  <p style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0' }}>Sua agenda está livre!</p>
+                  <p style={{ color: '#888', fontSize: '12px', margin: 0, lineHeight: '1.4' }}>Compartilhe seu link de agendamento no Instagram para atrair novas clientes.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const link = `https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`;
+                    navigator.clipboard.writeText(link);
+                    alert('📋 Link de agendamento copiado com sucesso!');
+                  }}
+                  style={{
+                    backgroundColor: '#ff4a7d',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    marginTop: '6px',
+                    boxShadow: '0px 4px 10px rgba(255, 74, 125, 0.3)'
+                  }}
                 >
-                  Adicionar Profissional
+                  🔗 Copiar Link para o Instagram
                 </button>
               </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {(!funcionarios || funcionarios.length === 0) ? (
-                  <p style={{ fontSize: '12px', color: '#888', textAlign: 'center', margin: '10px 0' }}>Nenhuma profissional cadastrada.</p>
-                ) : (
-                  funcionarios.map((func) => (
-                    <div key={func.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '10px', borderRadius: '6px', border: '1px solid #eee', fontSize: '12px' }}>
-                      <span>👤 <b>{func.nome_funcionario}</b> — {func.especialidade || 'Geral'}</span>
-                      <button 
-                        type="button" 
-                        onClick={() => deletarFuncionario(func.id)} 
-                        style={{ backgroundColor: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            <form onSubmit={salvarDadosDona} style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '15px' }}>
-              <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>{idServicoSendoEditado ? 'Editar Serviço' : 'Cadastrar Novo Serviço'}</h4>
-              <div style={{ marginBottom: '15px', color: '#333' }}>Nome do serviço<input type="text" required value={nomeServico} onChange={(e) => setNomeServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
-              <div style={{ marginBottom: '15px', color: '#333' }}>Preço (R$)<input type="number" step="0.01" required value={precoServico} onChange={(e) => setPrecoServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
-              <div style={{ marginBottom: '25px', color: '#333' }}>Duração (em minutos)<input type="number" required placeholder="Ex: 60" value={duracaoMinutos} onChange={(e) => setDuracaoMinutos(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
-
-              <button type="submit" disabled={carregando} style={{ width: '100%', padding: '15px', backgroundColor: idServicoSendoEditado ? '#1ebd60' : '#ff4a7d', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
-                {carregando ? 'Salvando...' : idServicoSendoEditado ? 'Confirmar Alterações' : 'Salvar no Catálogo'}
-              </button>
-            </form>
-          </div>
-
-          <div style={{ backgroundColor: '#29292e', borderRadius: '20px', padding: '20px' }}>
-            <h3 style={{ color: '#fff', margin: '0 0 15px 0', fontSize: '16px', textAlign: 'center' }}>📋 Meus Serviços Ativos</h3>
-            {listaServicos.length === 0 ? (
-              <p style={{ color: '#888', fontSize: '14px', textAlign: 'center' }}>Nenhum serviço cadastrado.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {listaServicos.map((serv) => (
-                  <div key={serv.id} style={{ backgroundColor: '#121214', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #333' }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{serv.nome_servico}</div>
-                      <div style={{ fontSize: '12px', color: '#aaa', marginTop: '2px' }}>{serv.duracao_minutos} min • <span style={{ color: '#ff4a7d', fontWeight: 'bold' }}>R$ {(serv.preco || 0).toFixed(2)}</span></div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {proximosAgendamentos.map((agend) => (
+                  <div key={agend.id} style={{ backgroundColor: '#121214', padding: '12px', borderRadius: '10px', border: '1px solid #333' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {agend.nome_cliente}
+                      {verificarClienteVIP(agend.nome_cliente, historicoAgendamentos) && (
+                        <span style={{ backgroundColor: '#fff0f5', color: '#ff4a7d', fontSize: '11px', padding: '2px 6px', borderRadius: '20px', border: '1px solid #ffb6c1', fontWeight: 'bold' }}>
+                          ⭐ VIP
+                        </span>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button onClick={() => iniciarEdicao(serv)} style={{ backgroundColor: 'transparent', border: 'none', color: '#1ebd60', cursor: 'pointer', fontSize: '16px' }}>✏️</button>
-                      <button onClick={() => deletarServico(serv.id)} style={{ backgroundColor: 'transparent', border: 'none', color: '#ff4a7d', cursor: 'pointer', fontSize: '16px' }}>🗑️</button>
+                    <div style={{ fontSize: '12px', color: '#aaa', marginTop: '4px' }}>📞 {agend.whatsapp_cliente || 'N/A'}</div>
+                    <div style={{ fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold', marginTop: '4px' }}>📅 {agend.data_hora ? new Date(agend.data_hora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Data inválida'}</div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #222' }}>
+                      <button onClick={() => dispararLembreteWhats(agend)} style={{ backgroundColor: '#25D366', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>💬</button>
+                      <button onClick={() => { setAgendamentoSelecionado(agend); setValorRecebido('120.00'); setModalBaixaAberto(true); }} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
+                      <button onClick={() => { setAgendamentoSelecionado(agend); setModalRemarcarAberto(true); }} style={{ flex: 1, backgroundColor: '#d97706', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>📅 Remarcar</button>
+                      <button onClick={() => deletarAgendamento(agend.id)} style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ABA ATUALIZAR CARTÃO */}
+      {abaAtiva === 'cartao' && (
+        <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          <TelaAlterarCartao userId={userAtual?.id || ''} />
+        </div>
+      )}
+
+      {/* ABA CONFIGURAÇÕES */}
+      {abaAtiva === 'configuracao' && (
+        <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {mensagemSucesso && (
+            <div style={{ backgroundColor: '#065f46', color: '#d1fae5', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', textAlign: 'center', border: '1px solid #10b981', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)' }}>
+              ✅ {mensagemSucesso}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', backgroundColor: '#18181c', padding: '4px', borderRadius: '12px', border: '1px solid #27272a', gap: '4px' }}>
+            <button
+              type="button"
+              onClick={() => setSubAbaAjustes('geral')}
+              style={{
+                flex: 1,
+                backgroundColor: subAbaAjustes === 'geral' ? '#ff4a7d' : 'transparent',
+                color: subAbaAjustes === 'geral' ? '#fff' : '#9ca3af',
+                border: 'none',
+                padding: '10px 6px',
+                borderRadius: '8px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              ⚙️ Geral
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSubAbaAjustes('equipe')}
+              style={{
+                flex: 1,
+                backgroundColor: subAbaAjustes === 'equipe' ? '#ff4a7d' : 'transparent',
+                color: subAbaAjustes === 'equipe' ? '#fff' : '#9ca3af',
+                border: 'none',
+                padding: '10px 6px',
+                borderRadius: '8px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              👥 Equipe
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSubAbaAjustes('servicos')}
+              style={{
+                flex: 1,
+                backgroundColor: subAbaAjustes === 'servicos' ? '#ff4a7d' : 'transparent',
+                color: subAbaAjustes === 'servicos' ? '#fff' : '#9ca3af',
+                border: 'none',
+                padding: '10px 6px',
+                borderRadius: '8px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              ✂️ Serviços
+            </button>
+          </div>
+
+          {subAbaAjustes === 'geral' && (
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
+              <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
+                Configurar meu Studio
+              </h2>
+              
+              <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5' }}>
+                <div style={{ marginBottom: '16px', textAlign: 'left' }}>
+                  <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Nome do Salão / Studio</span>
+                  <input 
+                    type="text" 
+                    value={nomeSalao} 
+                    onChange={(e) => setNomeSalao(e.target.value)} 
+                    placeholder="Ex: Studio Bella" 
+                    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+                  />
+                </div>
+
+                <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#d6336c', marginBottom: '12px', textAlign: 'center' }}>⏰ Horário de Funcionamento</div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '15px' }}>
+                  <div>
+                    <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Abertura</span>
+                    <input type="time" value={horaAbertura} onChange={(e) => setHoraAbertura(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Fechamento</span>
+                    <input type="time" value={horaFechamento} onChange={(e) => setHoraFechamento(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Almoço Início</span>
+                    <input type="time" value={almocoInicio} onChange={(e) => setAlmocoInicio(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '12px', color: '#444', fontWeight: '600', display: 'block', marginBottom: '4px' }}>Almoço Fim</span>
+                    <input type="time" value={almocoFim} onChange={(e) => setAlmocoFim(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispararFeedback('Configurações gerais salvas com sucesso!');
+                  }}
+                  style={{ width: '100%', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginTop: '10px' }}
+                >
+                  Salvar Alterações
+                </button>
+              </div>
+
+              <div style={{ marginBottom: '15px', textAlign: 'left' }}>
+                <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>WhatsApp do Salão (com DDD)</span>
+                <input type="text" value={whatsappProfissional} onChange={(e) => setWhatsappProfissional(e.target.value)} placeholder="Ex: 11999999999" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
+              </div>
+
+              <div style={{ marginBottom: '15px', textAlign: 'left', backgroundColor: '#ffe6ed', padding: '10px', borderRadius: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', color: '#333' }}>
+                  <input type="checkbox" checked={cobrarSinal} onChange={(e) => setCobrarSinal(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#ff4a7d' }} /> 
+                  Cobrar sinal de R$ 20,00?
+                </label>
+              </div>
+
+              {cobrarSinal && (
+                <div style={{ marginBottom: '15px', textAlign: 'left' }}>
+                  <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Sua Chave PIX:</span>
+                  <input type="text" value={chavePixSinal} onChange={(e) => setChavePixSinal(e.target.value)} placeholder="Ex: CPF, Telefone ou Chave Aleatória" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
+                </div>
+              )}
+              
+              <button 
+                type="button" 
+                onClick={salvarConfiguracoesGlobais}
+                disabled={salvandoConfigSalao}
+                style={{ width: '100%', padding: '13px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px', boxShadow: '0px 4px 10px rgba(0,0,0,0.2)' }}
+              >
+                {salvandoConfigSalao ? 'Salvando Configurações...' : '💾 Salvar Alterações'}
+              </button>
+            </div>
+          )}
+
+{subAbaAjustes === 'equipe' && (
+  <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
+    <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
+      Gerenciar Equipe
+    </h2>
+    
+    <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5' }}>
+      <p style={{ fontSize: '13px', color: '#444', marginBottom: '15px', textAlign: 'center' }}>Adicione os profissionais que fazem atendimento no seu estúdio.</p>
+      
+      <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+        <input 
+          type="text" 
+          value={novoNomeFuncionario || ''} 
+          onChange={(e) => setNovoNomeFuncionario(e.target.value)} 
+          placeholder="Nome da Profissional (Ex: Paula)" 
+          style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+        />
+        <input 
+          type="text" 
+          value={novaEspecialidadeFuncionario || ''} 
+          onChange={(e) => setNovaEspecialidadeFuncionario(e.target.value)} 
+          placeholder="O que ela faz? (Ex: Sobrancelha, Cílios)" 
+          style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+        />
+        <button 
+          type="button" 
+          onClick={cadastrarFuncionario} 
+          style={{ padding: '12px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}
+        >
+          Adicionar Profissional
+        </button>
+      </div>
+    </div>
+    
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>👥 Profissionais Cadastrados</h4>
+      {(!funcionarios || funcionarios.length === 0) ? (
+        <p style={{ fontSize: '12px', color: '#888', textAlign: 'center', margin: '10px 0' }}>Nenhuma profissional cadastrada.</p>
+      ) : (
+        funcionarios.map((func) => (
+          <div key={func.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '8px', border: '1px solid #eee', fontSize: '13px' }}>
+            <span>👤 <b>{func.nome_funcionario}</b> — {func.especialidade || 'Geral'}</span>
+            <button 
+              type="button" 
+              onClick={() => deletarFuncionario(func.id)} 
+              style={{ backgroundColor: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Remover
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+)}
+
+          {subAbaAjustes === 'servicos' && (
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
+              <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
+                {idServicoSendoEditado ? '📝 Editar Serviço' : 'Catálogo de Serviços'}
+              </h2>
+              <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5', textAlign: 'center' }}>
+                <p style={{ fontSize: '13px', color: '#444', marginBottom: '15px' }}>Cadastre os procedimentos oferecidos no seu espaço.</p>
+                
+                <input 
+                  type="text" 
+                  placeholder="Nome do Serviço (Ex: Escova Progressiva)" 
+                  value={nomeServico}
+                  onChange={(e) => setNomeServico(e.target.value)}
+                  style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', marginBottom: '10px', boxSizing: 'border-box' }} 
+                />
+                <div style={{ marginBottom: '15px' }}>
+  <input 
+    type="text"
+    placeholder="Preço (R$)"
+    value={precoServico}
+    onChange={(e) => setPrecoServico(e.target.value)}
+    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box', marginBottom: '10px' }} 
+  />
+  <input 
+    type="text"
+    placeholder="Duração (min)"
+    value={duracaoMinutos}
+    onChange={(e) => setDuracaoMinutos(e.target.value)}
+    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+  />
+</div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispararFeedback('Salvo no catálogo com sucesso!');
+                  }}
+                  style={{ width: '100%', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Salvar no Catálogo
+                </button>
+              </div>
+
+              <form onSubmit={salvarDadosDona} style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '15px' }}>
+                <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>{idServicoSendoEditado ? 'Editar Serviço' : 'Cadastrar Novo Serviço'}</h4>
+                <div style={{ marginBottom: '15px', color: '#333' }}>Nome do serviço<input type="text" required value={nomeServico} onChange={(e) => setNomeServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
+                <div style={{ marginBottom: '15px', color: '#333' }}>Preço (R$)<input type="number" step="0.01" required value={precoServico} onChange={(e) => setPrecoServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
+                <div style={{ marginBottom: '25px', color: '#333' }}>Duração (em minutos)<input type="number" required placeholder="Ex: 60" value={duracaoMinutos} onChange={(e) => setDuracaoMinutos(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
+
+                <button type="submit" disabled={carregando} style={{ width: '100%', padding: '15px', backgroundColor: idServicoSendoEditado ? '#1ebd60' : '#ff4a7d', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  {carregando ? 'Salvando...' : idServicoSendoEditado ? 'Confirmar Alterações' : 'Salvar no Catálogo'}
+                </button>
+              </form>
+
+              <div style={{ backgroundColor: '#29292e', borderRadius: '20px', padding: '20px', marginTop: '20px' }}>
+                <h3 style={{ color: '#fff', margin: '0 0 15px 0', fontSize: '16px', textAlign: 'center' }}>📋 Meus Serviços Ativos</h3>
+                {listaServicos.length === 0 ? (
+                  <p style={{ color: '#888', fontSize: '14px', textAlign: 'center' }}>Nenhum serviço cadastrado.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {listaServicos.map((serv) => (
+                      <div key={serv.id} style={{ backgroundColor: '#121214', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #333' }}>
+                        <div>
+                          <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#fff' }}>{serv.nome_servico}</div>
+                          <div style={{ fontSize: '12px', color: '#aaa', marginTop: '2px' }}>{serv.duracao_minutos} min • <span style={{ color: '#ff4a7d', fontWeight: 'bold' }}>R$ {(serv.preco || 0).toFixed(2)}</span></div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button type="button" onClick={() => iniciarEdicao(serv)} style={{ backgroundColor: 'transparent', border: 'none', color: '#1ebd60', cursor: 'pointer', fontSize: '16px' }}>✏️</button>
+                          <button type="button" onClick={() => deletarServico(serv.id)} style={{ backgroundColor: 'transparent', border: 'none', color: '#ff4a7d', cursor: 'pointer', fontSize: '16px' }}>🗑️</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div style={{ marginTop: '16px', backgroundColor: '#121215', padding: '16px', borderRadius: '8px', border: '1px solid #27272a' }}>
+            <label style={{ fontSize: '11px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>
+              🔗 Seu Link de Agendamento (Cole no Instagram/WhatsApp)
+            </label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                readOnly 
+                value={`https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`}
+                style={{ width: '100%', backgroundColor: '#18181c', border: '1px solid #27272a', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#ff4a7d', outline: 'none' }} 
+              />
+              <button 
+                type="button"
+                onClick={() => {
+                  const link = `https://glow-agenda-sand.vercel.app/${userAtual?.id || ''}`;
+                  navigator.clipboard.writeText(link);
+                  alert('📋 Link de agendamento copiado com sucesso!');
+                }}
+                style={{ backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Copiar
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1323,7 +1454,7 @@ const totalComissaoMes = totalComissaoParceiras;
             <h3 style={{ color: '#1ebd60', margin: '0 0 10px 0', fontSize: '18px' }}>Concluir Atendimento</h3>
             <div style={{ marginBottom: '12px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Valor Recebido (R$)</span><input type="number" step="0.01" value={valorRecebido} onChange={(e) => setValorRecebido(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#fff', marginTop: '4px' }} /></div>
             <div style={{ marginBottom: '20px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Forma de Pagamento</span><select value={formaPagamento} onChange={(e) => setFormaPagamento(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#fff', marginTop: '4px' }}><option value="pix">PIX</option><option value="cartao_credito">Cartão de Crédito</option><option value="cartao_debito">Cartão de Débito</option><option value="dinheiro">Dinheiro</option></select></div>
-            <div style={{ display: 'flex', gap: '10px' }}><button onClick={() => setModalBaixaAberto(false)} style={{ flex: 1, padding: '10px', backgroundColor: 'transparent', border: '1px solid #444', color: '#ccc', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button><button onClick={confirmarBaixa} style={{ flex: 1, padding: '10px', backgroundColor: '#1ebd60', border: 'none', color: '#fff', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer' }}>Confirmar</button></div>
+            <div style={{ display: 'flex', gap: '10px' }}><button type="button" onClick={() => setModalBaixaAberto(false)} style={{ flex: 1, padding: '10px', backgroundColor: 'transparent', border: '1px solid #444', color: '#ccc', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button><button type="button" onClick={confirmarBaixa} style={{ flex: 1, padding: '10px', backgroundColor: '#1ebd60', border: 'none', color: '#fff', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer' }}>Confirmar</button></div>
           </div>
         </div>
       )}
@@ -1334,11 +1465,11 @@ const totalComissaoMes = totalComissaoParceiras;
           <div style={{ backgroundColor: '#202024', borderRadius: '20px', padding: '25px', maxWidth: '340px', width: '100%', color: '#fff' }}>
             <h3 style={{ color: '#d97706', margin: '0 0 10px 0', fontSize: '18px' }}>Remarcar Atendimento</h3>
             <div style={{ marginBottom: '12px', marginTop: '10px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Nova Data</span><input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#fff', marginTop: '4px' }} /></div>
-            <div style={{ marginBottom: '20px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Novo Horário</span><input type="time" value={novaHora} onChange={(e) => setNovaHora(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#444', colorScheme: 'dark', marginTop: '4px' }} /></div>
-            <div style={{ display: 'flex', gap: '10px' }}><button onClick={() => setModalRemarcarAberto(false)} style={{ flex: '1', padding: '10px', backgroundColor: 'transparent', border: '1px solid #444', color: '#ccc', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button><button onClick={salvarRemarcacao} style={{ flex: '1', padding: '10px', backgroundColor: '#d97706', border: 'none', color: '#fff', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer' }}>Salvar Data</button></div>
+            <div style={{ marginBottom: '20px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Novo Horário</span><input type="time" value={novaHora} onChange={(e) => setNovaHora(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', colorScheme: 'dark', marginTop: '4px' }} /></div>
+            <div style={{ display: 'flex', gap: '10px' }}><button type="button" onClick={() => setModalRemarcarAberto(false)} style={{ flex: '1', padding: '10px', backgroundColor: 'transparent', border: '1px solid #444', color: '#ccc', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button><button type="button" onClick={salvarRemarcacao} style={{ flex: '1', padding: '10px', backgroundColor: '#d97706', border: 'none', color: '#fff', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer' }}>Salvar Data</button></div>
           </div>
         </div>
       )}
     </div>
-  );
-}
+);
+      }
