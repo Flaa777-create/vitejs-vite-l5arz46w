@@ -28,7 +28,6 @@ export default function App() {
 
 export function TelaCliente() {
   const { ownerId } = useParams<{ ownerId: string }>();
-  console.log("VALOR RECEBIDO DO OWNERID:", ownerId);
   const [nomeCliente, setNomeCliente] = useState('');
   const [whatsappCliente, setWhatsappCliente] = useState('');
   
@@ -64,25 +63,16 @@ export function TelaCliente() {
   const carregarDadosPublicos = useCallback(async () => {
     if (!ownerId) return;
   
-    console.log('🔎 OWNER ID DO LINK PÚBLICO:', ownerId);
-  
-    const { data: salonData, error: salonError } = await supabase
+    const { data: salonData } = await supabase
       .from('salons')
       .select('*')
       .eq('owner_id', ownerId)
       .limit(1)
-      .single();
+      .maybeSingle();
   
-    console.log('🏠 SALÃO ENCONTRADO:', salonData);
-    console.log('❌ ERRO SALÃO:', salonError);
-    
     if (salonData) {
-      console.log('✅ ENTROU NO IF SALONDATA');
-      console.log('🏷️ OWNER ID DO SALÃO:', salonData.owner_id);
-      console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
-
-      setSalonOwnerId(salonData.owner_id || null);
-      if (salonData.nome_salao) {
+      setSalonOwnerId(salonData.owner_id || ownerId);
+      if (salonData.nome_salao && salonData.nome_salao.trim() !== '') {
         setNomeSalao(salonData.nome_salao);
       }
   
@@ -101,39 +91,28 @@ export function TelaCliente() {
       if (salonData.cobrar_sinal !== undefined) {
         setCobrarSinalConfig(Boolean(salonData.cobrar_sinal));
       }
-  
-      // =========================
-      // BUSCAR SERVIÇOS
-      // =========================
-      const { data: servs, error: servicosError } = await supabase
-        .from('servicos')
-        .select('*')
-        .eq('owner_id', ownerId)
-        .order('nome_servico', { ascending: true });
-  
-      console.log('🔎 OWNER ID USADO PARA SERVIÇOS:', ownerId);
-      console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
-      console.log('❌ ERRO SERVIÇOS:', servicosError);
-  
-      if (servs) {
-        setServicosDoSalao(servs);
-      }
-  
-      // =========================
-      // BUSCAR FUNCIONÁRIOS
-      // =========================
-      const { data: funs, error: funcionariosError } = await supabase
-        .from('funcionarios')
-        .select('*')
-        .eq('owner_id', ownerId);
-  
-      console.log('🔎 OWNER ID USADO PARA FUNCIONÁRIOS:', ownerId);
-      console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
-      console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
-  
-      if (funs) {
-        setFuncionarios(funs);
-      }
+    } else {
+      setSalonOwnerId(ownerId);
+    }
+
+    // Buscar Serviços
+    const { data: servs } = await supabase
+      .from('servicos')
+      .select('*')
+      .eq('owner_id', ownerId);
+
+    if (servs) {
+      setServicosDoSalao(servs);
+    }
+
+    // Buscar Funcionários
+    const { data: funs } = await supabase
+      .from('funcionarios')
+      .select('*')
+      .eq('owner_id', ownerId);
+
+    if (funs) {
+      setFuncionarios(funs);
     }
   }, [ownerId]);
 
@@ -233,7 +212,7 @@ export function TelaCliente() {
         data_hora: dataHoraCompleta.toISOString(), 
         status_pagamento: 'Pendente', 
         status: 'pendente',
-        owner_id: salonOwnerId
+        owner_id: salonOwnerId || ownerId
       };
 
       if (funcionarioSelecionada) {
@@ -287,18 +266,22 @@ export function TelaCliente() {
         <form onSubmit={confirmarAgendamento}>
           <div style={{ marginBottom: '10px', color: '#333', fontSize: '14px', fontWeight: 'bold' }}>Selecione o(s) Serviço(s):</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '160px', overflowY: 'auto', marginBottom: '15px' }}>
-            {servicosDoSalao.map((serv) => {
-              const selecionado = servicosSelecionados.some(s => s.id === serv.id);
-              return (
-                <label key={serv.id} onClick={() => toggleServico(serv)} style={{ backgroundColor: '#ffffff', padding: '10px 15px', borderRadius: '12px', border: selecionado ? '2px solid #ff4a7d' : '1px solid #ffccd5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                  <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{serv.nome_servico}</div>
-                    <div style={{ fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold' }}>R$ {serv.preco ? Number(serv.preco).toFixed(2) : '0.00'} ({serv.duracao_minutos} min)</div>
-                  </div>
-                  <input type="checkbox" checked={selecionado} onChange={() => {}} style={{ accentColor: '#ff4a7d' }} />
-                </label>
-              );
-            })}
+            {servicosDoSalao.length === 0 ? (
+              <div style={{ fontSize: '12px', color: '#888', textAlign: 'center', padding: '10px' }}>Nenhum serviço disponível no momento.</div>
+            ) : (
+              servicosDoSalao.map((serv) => {
+                const selecionado = servicosSelecionados.some(s => s.id === serv.id);
+                return (
+                  <label key={serv.id} onClick={() => toggleServico(serv)} style={{ backgroundColor: '#ffffff', padding: '10px 15px', borderRadius: '12px', border: selecionado ? '2px solid #ff4a7d' : '1px solid #ffccd5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                    <div>
+                      <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{serv.nome_servico}</div>
+                      <div style={{ fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold' }}>R$ {serv.preco ? Number(serv.preco).toFixed(2) : '0.00'} ({serv.duracao_minutos} min)</div>
+                    </div>
+                    <input type="checkbox" checked={selecionado} onChange={() => {}} style={{ accentColor: '#ff4a7d' }} />
+                  </label>
+                );
+              })
+            )}
           </div>
 
           {servicosSelecionados.length > 0 && (
@@ -482,6 +465,7 @@ export function TelaAuth() {
       />
     );
   }
+
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
       <div style={{ width: '100%', maxWidth: '380px', backgroundColor: '#fff0f3', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
@@ -695,7 +679,7 @@ export function TelaProprietaria() {
       }
       setCurrentOwnerId(user.id);
 
-      const { data: salonData } = await supabase.from('salons').select('*').eq('owner_id', user.id).single();
+      const { data: salonData } = await supabase.from('salons').select('*').eq('owner_id', user.id).maybeSingle();
       const subStatus = salonData?.subscription_status || 'active';
       if (subStatus !== 'active') {
         navigate('/assinatura-pendente');
@@ -728,7 +712,6 @@ export function TelaProprietaria() {
       console.error(error.message); 
     }
   }, [navigate]);
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -774,7 +757,7 @@ export function TelaProprietaria() {
     setNovoNomeFuncionario('');
     setNovaEspecialidadeFuncionario('');
     await buscarFuncionarios(usuarioLogadoId);
-    alert('Profissional cadastrada com sucesso!');
+    dispararFeedback('Profissional cadastrada com sucesso!');
   };
 
   const dispararLembreteWhats = (agend: any) => {
@@ -829,8 +812,8 @@ export function TelaProprietaria() {
       const payloadServico = {
         owner_id: user.id,
         nome_servico: nomeServico, 
-        preco: parseFloat(precoServico), 
-        duracao_minutos: parseInt(duracaoMinutos)
+        preco: parseFloat(precoServico) || 0, 
+        duracao_minutos: parseInt(duracaoMinutos) || 60
       };
 
       if (idServicoSendoEditado) {
@@ -841,6 +824,7 @@ export function TelaProprietaria() {
       }
       setNomeServico(''); setPrecoServico(''); setDuracaoMinutos('');
       carregarDadosPainel();
+      dispararFeedback('Salvo no catálogo com sucesso!');
     } catch (error: any) { alert(error.message); } finally { setCarregando(false); }
   };
 
@@ -923,7 +907,6 @@ export function TelaProprietaria() {
   }, 0);
 
   const entradasMes = entradasHoje;
-  const totalComissaoMes = totalComissaoParceiras;
 
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', fontFamily: 'sans-serif', padding: '20px', color: '#fff', gap: '20px' }}>
@@ -1405,7 +1388,7 @@ export function TelaProprietaria() {
 
       {/* MODAL DE REMARCAÇÃO */}
       {modalRemarcarAberto && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '9999', padding: '20px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
           <div style={{ backgroundColor: '#202024', borderRadius: '20px', padding: '25px', maxWidth: '340px', width: '100%', color: '#fff' }}>
             <h3 style={{ color: '#d97706', margin: '0 0 10px 0', fontSize: '18px' }}>Remarcar Atendimento</h3>
             <div style={{ marginBottom: '12px', marginTop: '10px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Nova Data</span><input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#fff', marginTop: '4px' }} /></div>
@@ -1416,4 +1399,4 @@ export function TelaProprietaria() {
       )}
     </div>
   );
-} 
+}
