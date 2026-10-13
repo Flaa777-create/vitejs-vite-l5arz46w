@@ -11,7 +11,6 @@ import { TelaAlterarCartao } from './TelaAlterarCartao';
 export default function App() {
   return (
     <Routes>
-
       <Route path="/:ownerId?" element={<TelaCliente />} />
       <Route path="/login" element={<TelaAuth />} />
       <Route path="/painel" element={<TelaProprietaria />} />
@@ -61,6 +60,7 @@ export function TelaCliente() {
     almocoFim: '13:00',
     whatsappProfissional: '5511999999999'
   });
+
   const carregarDadosPublicos = useCallback(async () => {
     if (!ownerId) return;
   
@@ -76,29 +76,23 @@ export function TelaCliente() {
     console.log('🏠 SALÃO ENCONTRADO:', salonData);
     console.log('❌ ERRO SALÃO:', salonError);
     
-  
     if (salonData) {
-    console.log('✅ ENTROU NO IF SALONDATA');
-    console.log('🏷️ OWNER ID DO SALÃO:', salonData.owner_id);
-    console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
+      console.log('✅ ENTROU NO IF SALONDATA');
+      console.log('🏷️ OWNER ID DO SALÃO:', salonData.owner_id);
+      console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
 
       setSalonOwnerId(salonData.owner_id || null);
-
-      setNomeSalao(salonData.nome_salao || 'Studio');
+      if (salonData.nome_salao) {
+        setNomeSalao(salonData.nome_salao);
+      }
   
       setConfSalao({
         abertura: salonData.hora_abertura || '08:00',
         fechamento: salonData.hora_fechamento || '18:00',
         almocoInicio: salonData.almoco_inicio || '12:00',
         almocoFim: salonData.almoco_fim || '13:00',
-        whatsappProfissional:
-          salonData.whatsapp_profissional || '+55 (11) 999999999'
+        whatsappProfissional: salonData.whatsapp_profissional || '+55 (11) 999999999'
       });
-  
-      // Nome do salão
-      if (salonData.nome_salao) {
-        console.log('🏷️ NOME DO SALÃO:', salonData.nome_salao);
-      }
   
       if (salonData.chave_pix_sinal) {
         setChavePixSinal(salonData.chave_pix_sinal);
@@ -111,16 +105,15 @@ export function TelaCliente() {
       // =========================
       // BUSCAR SERVIÇOS
       // =========================
-  
       const { data: servs, error: servicosError } = await supabase
         .from('servicos')
         .select('*')
         .eq('owner_id', ownerId)
         .order('nome_servico', { ascending: true });
   
-        console.log('🔎 OWNER ID USADO PARA SERVIÇOS:', ownerId);
-        console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
-        console.log('❌ ERRO SERVIÇOS:', servicosError);
+      console.log('🔎 OWNER ID USADO PARA SERVIÇOS:', ownerId);
+      console.log('✂️ SERVIÇOS ENCONTRADOS:', servs);
+      console.log('❌ ERRO SERVIÇOS:', servicosError);
   
       if (servs) {
         setServicosDoSalao(servs);
@@ -129,15 +122,14 @@ export function TelaCliente() {
       // =========================
       // BUSCAR FUNCIONÁRIOS
       // =========================
-  
       const { data: funs, error: funcionariosError } = await supabase
         .from('funcionarios')
         .select('*')
         .eq('owner_id', ownerId);
   
-        console.log('🔎 OWNER ID USADO PARA FUNCIONÁRIOS:', ownerId);
-        console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
-        console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
+      console.log('🔎 OWNER ID USADO PARA FUNCIONÁRIOS:', ownerId);
+      console.log('👩‍💼 FUNCIONÁRIOS ENCONTRADOS:', funs);
+      console.log('❌ ERRO FUNCIONÁRIOS:', funcionariosError);
   
       if (funs) {
         setFuncionarios(funs);
@@ -490,7 +482,6 @@ export function TelaAuth() {
       />
     );
   }
-
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', color: '#fff' }}>
       <div style={{ width: '100%', maxWidth: '380px', backgroundColor: '#fff0f3', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
@@ -635,12 +626,12 @@ export function TelaProprietaria() {
   const [subAbaAjustes, setSubAbaAjustes] = useState<'geral' | 'equipe' | 'servicos'>('geral');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
 
-function dispararFeedback(mensagem: string) {
-  setMensagemSucesso(mensagem);
-  setTimeout(() => {
-    setMensagemSucesso('');
-  }, 3500);
-}
+  function dispararFeedback(mensagem: string) {
+    setMensagemSucesso(mensagem);
+    setTimeout(() => {
+      setMensagemSucesso('');
+    }, 3500);
+  }
   
   const [nomeServico, setNomeServico] = useState('');
   const [precoServico, setPrecoServico] = useState('');
@@ -665,6 +656,7 @@ function dispararFeedback(mensagem: string) {
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState<any>(null);
   const [valorRecebido, setValorRecebido] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('pix');
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -819,7 +811,7 @@ function dispararFeedback(mensagem: string) {
 
       if (error) throw error;
 
-      alert('Configurações e Chave Pix salvas com sucesso!');
+      dispararFeedback('Configurações e Chave Pix salvas com sucesso!');
       await carregarDadosPainel();
     } catch (error: any) {
       alert('Erro ao salvar configurações: ' + error.message);
@@ -908,29 +900,31 @@ function dispararFeedback(mensagem: string) {
     (agend) => (agend.status || '').toLowerCase() === 'concluido'
   );
 
-const lancamentosFiltrados = lancamentosConcluidos.filter(item => {
-  if (!item.data) return false;
-  if (filtroPeriodo === 'mes') {
-    return item.data.startsWith(mesSelecionado);
-  }
-  return item.data === dataHojeStr;
-});
+  const dataHojeStr = new Date().toISOString().split('T')[0];
+  const lancamentosFiltrados = lancamentosConcluidos.filter(item => {
+    if (!item.data_hora) return false;
+    const dataItemStr = new Date(item.data_hora).toISOString().split('T')[0];
+    if (filtroPeriodo === 'mes') {
+      const [mesItem, anoItem] = [String(new Date(item.data_hora).getMonth() + 1).padStart(2, '0'), new Date(item.data_hora).getFullYear()];
+      return `${mesItem}-${anoItem}` === mesSelecionado;
+    }
+    return dataItemStr === dataHojeStr;
+  });
 
- const entradasHoje = lancamentosFiltrados.reduce((total, l) => total + (Number(l.valor_pago) || Number(l.preco) || 0), 0);
- const totalAgendamentos = lancamentosFiltrados.length;
+  const entradasHoje = lancamentosFiltrados.reduce((total, l) => total + (Number(l.valor_pago) || Number(l.preco) || 0), 0);
+  const totalAgendamentos = lancamentosFiltrados.length;
  
- const percentualComissao = 0.50;
- const totalComissaoParceiras = lancamentosFiltrados.reduce((total, l) => {
-   if (l.funcional_id || (l.nome_funcionario && l.nome_funcionario !== 'Dona do Salão')) {
-     return total + ((Number(l.valor_pago) || Number(l.preco) || 0) * percentualComissao);
-   }
-   return total;
- }, 0);
+  const percentualComissao = 0.50;
+  const totalComissaoParceiras = lancamentosFiltrados.reduce((total, l) => {
+    if (l.funcionario_id || (l.nome_funcionario && l.nome_funcionario !== 'Dona do Salão')) {
+      return total + ((Number(l.valor_pago) || Number(l.preco) || 0) * percentualComissao);
+    }
+    return total;
+  }, 0);
 
- const entradasMes = entradasHoje;
-const totalComissaoMes = totalComissaoParceiras;
+  const entradasMes = entradasHoje;
+  const totalComissaoMes = totalComissaoParceiras;
 
-  const caixaLiquidoPrincipalSalao = entradasHoje - totalComissaoParceiras;
   return (
     <div style={{ backgroundColor: '#121214', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', fontFamily: 'sans-serif', padding: '20px', color: '#fff', gap: '20px' }}>
       <div style={{ width: '100%', maxWidth: '380px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#202024', padding: '10px 15px', borderRadius: '15px' }}>
@@ -982,7 +976,6 @@ const totalComissaoMes = totalComissaoParceiras;
               Este Mês
             </button>
 
-            {/* Seletor de Mês/Ano para auditoria de qualquer mês passado */}
             <input 
               type="month" 
               value={mesSelecionado} 
@@ -1002,7 +995,6 @@ const totalComissaoMes = totalComissaoParceiras;
             />
           </div>
 
-          {/* Card de Total de Entradas (dinâmico conforme o período ou mês selecionado) */}
           <div style={{ backgroundColor: '#29292e', padding: '15px', borderRadius: '8px', borderLeft: '5px solid #4caf50' }}>
             <p style={{ margin: 0, fontSize: '13px', color: '#aaa' }}>
               Total de Entradas ({filtroPeriodo === 'hoje' ? 'Hoje' : `Mês: ${mesSelecionado}`}):
@@ -1244,21 +1236,11 @@ const totalComissaoMes = totalComissaoParceiras;
                     <input type="time" value={almocoFim} onChange={(e) => setAlmocoFim(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    dispararFeedback('Configurações gerais salvas com sucesso!');
-                  }}
-                  style={{ width: '100%', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginTop: '10px' }}
-                >
-                  Salvar Alterações
-                </button>
               </div>
 
               <div style={{ marginBottom: '15px', textAlign: 'left' }}>
                 <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>WhatsApp do Salão (com DDD)</span>
-                <input type="text" value={whatsappProfissional} onChange={(e) => setWhatsappProfissional(e.target.value)} placeholder="Ex: 11999999999" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
+                <input type="text" value={whatsappProfissional} onChange={(e) => setWhatsappProfissional(e.target.value)} placeholder="Ex: 11999999999" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
               </div>
 
               <div style={{ marginBottom: '15px', textAlign: 'left', backgroundColor: '#ffe6ed', padding: '10px', borderRadius: '8px' }}>
@@ -1271,7 +1253,7 @@ const totalComissaoMes = totalComissaoParceiras;
               {cobrarSinal && (
                 <div style={{ marginBottom: '15px', textAlign: 'left' }}>
                   <span style={{ fontSize: '12px', color: '#444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Sua Chave PIX:</span>
-                  <input type="text" value={chavePixSinal} onChange={(e) => setChavePixSinal(e.target.value)} placeholder="Ex: CPF, Telefone ou Chave Aleatória" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333' }} />
+                  <input type="text" value={chavePixSinal} onChange={(e) => setChavePixSinal(e.target.value)} placeholder="Ex: CPF, Telefone ou Chave Aleatória" style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} />
                 </div>
               )}
               
@@ -1286,110 +1268,72 @@ const totalComissaoMes = totalComissaoParceiras;
             </div>
           )}
 
-{subAbaAjustes === 'equipe' && (
-  <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
-    <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
-      Gerenciar Equipe
-    </h2>
-    
-    <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5' }}>
-      <p style={{ fontSize: '13px', color: '#444', marginBottom: '15px', textAlign: 'center' }}>Adicione os profissionais que fazem atendimento no seu estúdio.</p>
-      
-      <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
-        <input 
-          type="text" 
-          value={novoNomeFuncionario || ''} 
-          onChange={(e) => setNovoNomeFuncionario(e.target.value)} 
-          placeholder="Nome da Profissional (Ex: Paula)" 
-          style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
-        />
-        <input 
-          type="text" 
-          value={novaEspecialidadeFuncionario || ''} 
-          onChange={(e) => setNovaEspecialidadeFuncionario(e.target.value)} 
-          placeholder="O que ela faz? (Ex: Sobrancelha, Cílios)" 
-          style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
-        />
-        <button 
-          type="button" 
-          onClick={cadastrarFuncionario} 
-          style={{ padding: '12px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}
-        >
-          Adicionar Profissional
-        </button>
-      </div>
-    </div>
-    
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>👥 Profissionais Cadastrados</h4>
-      {(!funcionarios || funcionarios.length === 0) ? (
-        <p style={{ fontSize: '12px', color: '#888', textAlign: 'center', margin: '10px 0' }}>Nenhuma profissional cadastrada.</p>
-      ) : (
-        funcionarios.map((func) => (
-          <div key={func.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '8px', border: '1px solid #eee', fontSize: '13px' }}>
-            <span>👤 <b>{func.nome_funcionario}</b> — {func.especialidade || 'Geral'}</span>
-            <button 
-              type="button" 
-              onClick={() => deletarFuncionario(func.id)} 
-              style={{ backgroundColor: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              Remover
-            </button>
-          </div>
-        ))
-      )}
-    </div>
-  </div>
-)}
+          {subAbaAjustes === 'equipe' && (
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
+              <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
+                Gerenciar Equipe
+              </h2>
+              
+              <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5' }}>
+                <p style={{ fontSize: '13px', color: '#444', marginBottom: '15px', textAlign: 'center' }}>Adicione os profissionais que fazem atendimento no seu estúdio.</p>
+                
+                <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+                  <input 
+                    type="text" 
+                    value={novoNomeFuncionario || ''} 
+                    onChange={(e) => setNovoNomeFuncionario(e.target.value)} 
+                    placeholder="Nome da Profissional (Ex: Paula)" 
+                    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+                  />
+                  <input 
+                    type="text" 
+                    value={novaEspecialidadeFuncionario || ''} 
+                    onChange={(e) => setNovaEspecialidadeFuncionario(e.target.value)} 
+                    placeholder="O que ela faz? (Ex: Sobrancelha, Cílios)" 
+                    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={cadastrarFuncionario} 
+                    style={{ padding: '12px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}
+                  >
+                    Adicionar Profissional
+                  </button>
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>👥 Profissionais Cadastrados</h4>
+                {(!funcionarios || funcionarios.length === 0) ? (
+                  <p style={{ fontSize: '12px', color: '#888', textAlign: 'center', margin: '10px 0' }}>Nenhuma profissional cadastrada.</p>
+                ) : (
+                  funcionarios.map((func) => (
+                    <div key={func.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '8px', border: '1px solid #eee', fontSize: '13px' }}>
+                      <span>👤 <b>{func.nome_funcionario}</b> — {func.especialidade || 'Geral'}</span>
+                      <button 
+                        type="button" 
+                        onClick={() => deletarFuncionario(func.id)} 
+                        style={{ backgroundColor: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
 
           {subAbaAjustes === 'servicos' && (
             <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
               <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
                 {idServicoSendoEditado ? '📝 Editar Serviço' : 'Catálogo de Serviços'}
               </h2>
-              <div style={{ backgroundColor: '#fff0f3', padding: '20px 15px', borderRadius: '12px', marginBottom: '20px', border: '1px solid #ffccd5', textAlign: 'center' }}>
-                <p style={{ fontSize: '13px', color: '#444', marginBottom: '15px' }}>Cadastre os procedimentos oferecidos no seu espaço.</p>
-                
-                <input 
-                  type="text" 
-                  placeholder="Nome do Serviço (Ex: Escova Progressiva)" 
-                  value={nomeServico}
-                  onChange={(e) => setNomeServico(e.target.value)}
-                  style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', marginBottom: '10px', boxSizing: 'border-box' }} 
-                />
-                <div style={{ marginBottom: '15px' }}>
-  <input 
-    type="text"
-    placeholder="Preço (R$)"
-    value={precoServico}
-    onChange={(e) => setPrecoServico(e.target.value)}
-    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box', marginBottom: '10px' }} 
-  />
-  <input 
-    type="text"
-    placeholder="Duração (min)"
-    value={duracaoMinutos}
-    onChange={(e) => setDuracaoMinutos(e.target.value)}
-    style={{ width: '100%', padding: '11px', borderRadius: '8px', border: '1px solid #b0b0b0', fontSize: '13px', backgroundColor: '#fff', color: '#333', boxSizing: 'border-box' }} 
-  />
-</div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    dispararFeedback('Salvo no catálogo com sucesso!');
-                  }}
-                  style={{ width: '100%', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
-                >
-                  Salvar no Catálogo
-                </button>
-              </div>
-
-              <form onSubmit={salvarDadosDona} style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '15px' }}>
-                <h4 style={{ color: '#ff4a7d', margin: '0 0 10px 0', fontSize: '15px', fontWeight: 'bold' }}>{idServicoSendoEditado ? 'Editar Serviço' : 'Cadastrar Novo Serviço'}</h4>
-                <div style={{ marginBottom: '15px', color: '#333' }}>Nome do serviço<input type="text" required value={nomeServico} onChange={(e) => setNomeServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
-                <div style={{ marginBottom: '15px', color: '#333' }}>Preço (R$)<input type="number" step="0.01" required value={precoServico} onChange={(e) => setPrecoServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
-                <div style={{ marginBottom: '25px', color: '#333' }}>Duração (em minutos)<input type="number" required placeholder="Ex: 60" value={duracaoMinutos} onChange={(e) => setDuracaoMinutos(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px' }} /></div>
+              <form onSubmit={salvarDadosDona} style={{ marginTop: '10px', paddingTop: '5px' }}>
+                <div style={{ marginBottom: '15px', color: '#333', textAlign: 'left' }}>Nome do serviço<input type="text" required value={nomeServico} onChange={(e) => setNomeServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px', boxSizing: 'border-box' }} /></div>
+                <div style={{ marginBottom: '15px', color: '#333', textAlign: 'left' }}>Preço (R$)<input type="number" step="0.01" required value={precoServico} onChange={(e) => setPrecoServico(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px', boxSizing: 'border-box' }} /></div>
+                <div style={{ marginBottom: '25px', color: '#333', textAlign: 'left' }}>Duração (em minutos)<input type="number" required placeholder="Ex: 60" value={duracaoMinutos} onChange={(e) => setDuracaoMinutos(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', marginTop: '3px', boxSizing: 'border-box' }} /></div>
 
                 <button type="submit" disabled={carregando} style={{ width: '100%', padding: '15px', backgroundColor: idServicoSendoEditado ? '#1ebd60' : '#ff4a7d', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
                   {carregando ? 'Salvando...' : idServicoSendoEditado ? 'Confirmar Alterações' : 'Salvar no Catálogo'}
@@ -1461,7 +1405,7 @@ const totalComissaoMes = totalComissaoParceiras;
 
       {/* MODAL DE REMARCAÇÃO */}
       {modalRemarcarAberto && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: '9999', padding: '20px' }}>
           <div style={{ backgroundColor: '#202024', borderRadius: '20px', padding: '25px', maxWidth: '340px', width: '100%', color: '#fff' }}>
             <h3 style={{ color: '#d97706', margin: '0 0 10px 0', fontSize: '18px' }}>Remarcar Atendimento</h3>
             <div style={{ marginBottom: '12px', marginTop: '10px' }}><span style={{ fontSize: '12px', color: '#ccc' }}>Nova Data</span><input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#121214', color: '#fff', marginTop: '4px' }} /></div>
@@ -1471,5 +1415,5 @@ const totalComissaoMes = totalComissaoParceiras;
         </div>
       )}
     </div>
-);
-      }
+  );
+} 
