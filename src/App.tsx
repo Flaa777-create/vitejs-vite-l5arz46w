@@ -1127,7 +1127,13 @@ useEffect(() => {
                     <div style={{ fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold', marginTop: '4px' }}>📅 {agend.data_hora ? new Date(agend.data_hora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Data inválida'}</div>
                     <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #222' }}>
                       <button onClick={() => dispararLembreteWhats(agend)} style={{ backgroundColor: '#25D366', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>💬</button>
-                      <button onClick={() => { setAgendamentoSelecionado(agend); setValorRecebido('120.00'); setModalBaixaAberto(true); }} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
+                      <button onClick={() => { 
+  setAgendamentoSelecionado(agend); 
+  const matchPreco = (agend.nome_cliente || '').match(/R\$\s*([\d,.]+)/);
+  const precoExtraido = matchPreco ? matchPreco[1].replace(',', '.') : '0.00';
+  setValorRecebido(precoExtraido); 
+  setModalBaixaAberto(true); 
+}} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
                       <button onClick={() => { setAgendamentoSelecionado(agend); setModalRemarcarAberto(true); }} style={{ flex: 1, backgroundColor: '#d97706', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>📅 Remarcar</button>
                       <button onClick={() => deletarAgendamento(agend.id)} style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
                     </div>
