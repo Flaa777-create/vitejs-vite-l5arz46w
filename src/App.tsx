@@ -283,6 +283,7 @@ export function TelaCliente() {
               })
             )}
           </div>
+
           {servicosSelecionados.length > 0 && (
             <div style={{ backgroundColor: '#ffeef3', padding: '8px 12px', borderRadius: '8px', marginBottom: '15px', fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
               <span>Total: R$ {precoTotal.toFixed(2)}</span>
@@ -411,9 +412,23 @@ export function TelaAuth() {
   const [emailCriado, setEmailCriado] = useState('');
   const [passouPeloPagamento, setPassouPeloPagamento] = useState(false);
 
+  // Carrega o e-mail salvo no localStorage assim que a tela abre
+  useEffect(() => {
+    const emailSalvo = localStorage.getItem('glowagenda_saved_email');
+    if (emailSalvo) {
+      setEmail(emailSalvo);
+    }
+  }, []);
+
   const lidarComAuth = async (e: React.FormEvent) => {
     e.preventDefault(); 
     setCarregando(true);
+
+    // Salva o e-mail no navegador
+    if (email) {
+      localStorage.setItem('glowagenda_saved_email', email);
+    }
+
     try {
       if (modoAuth === 'cadastro') {
         const { data, error } = await supabase.auth.signUp({ email, password });
@@ -476,6 +491,7 @@ export function TelaAuth() {
             E-mail Profissional
             <input 
               type="email" 
+              name="email"
               required 
               autoComplete="username"
               value={email} 
@@ -488,6 +504,7 @@ export function TelaAuth() {
             Sua Senha
             <input 
               type="password" 
+              name="password"
               required 
               autoComplete="current-password"
               value={password} 
@@ -1264,7 +1281,6 @@ useEffect(() => {
               </button>
             </div>
           )}
-
           {subAbaAjustes === 'equipe' && (
             <div style={{ backgroundColor: '#ffffff', borderRadius: '30px', padding: '30px 20px', color: '#333', boxShadow: '0px 10px 30px rgba(0,0,0,0.5)' }}>
               <h2 style={{ color: '#ff4a7d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '20px', fontWeight: 'bold' }}>
