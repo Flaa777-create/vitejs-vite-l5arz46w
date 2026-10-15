@@ -606,7 +606,7 @@ export function TelaAssinaturaPendente() {
         <div style={{ fontSize: '40px', marginBottom: '10px' }}>⚠️</div>
         <h2 style={{ color: '#ef4444', margin: '0 0 10px 0', fontSize: '22px' }}>Assinatura Pendente</h2>
         <p style={{ color: '#aaa', fontSize: '13px', lineHeight: '1.5', marginBottom: '25px' }}>
-          O acesso ao seu painel de agendamentos foi pausado por inadimplência ou carência da mensalidade (R$ 69,90). Regularize via Asaas para liberar sua agenda.
+          O acesso ao seu painel de agendamentos foi pausado por inadimplência ou carência da mensalidade (R$ 79,90). Regularize via Asaas para liberar sua agenda.
         </p>
         <button 
           onClick={regularizarAssinaturaAsaas} 
