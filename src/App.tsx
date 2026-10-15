@@ -283,7 +283,6 @@ export function TelaCliente() {
               })
             )}
           </div>
-
           {servicosSelecionados.length > 0 && (
             <div style={{ backgroundColor: '#ffeef3', padding: '8px 12px', borderRadius: '8px', marginBottom: '15px', fontSize: '12px', color: '#ff4a7d', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
               <span>Total: R$ {precoTotal.toFixed(2)}</span>
@@ -475,12 +474,26 @@ export function TelaAuth() {
         <form onSubmit={lidarComAuth}>
           <div style={{ marginBottom: '15px' }}>
             E-mail Profissional
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} />
+            <input 
+              type="email" 
+              required 
+              autoComplete="username"
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} 
+            />
           </div>
           
           <div style={{ marginBottom: '25px' }}>
             Sua Senha
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} />
+            <input 
+              type="password" 
+              required 
+              autoComplete="current-password"
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '14px', boxSizing: 'border-box', marginTop: '5px' }} 
+            />
           </div>
 
           <button type="submit" disabled={carregando} style={{ width: '100%', padding: '15px', backgroundColor: '#ff4a7d', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
@@ -712,7 +725,8 @@ export function TelaProprietaria() {
       console.error(error.message); 
     }
   }, [navigate]);
-  useEffect(() => {
+
+useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate('/login');
