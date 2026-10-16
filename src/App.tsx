@@ -168,10 +168,17 @@ export function TelaCliente() {
   }, [servicosSelecionados, duracaoTotal, confSalao]);
 
   useEffect(() => {
-    if (!dataSelecionada) return;
-    const buscarHorariosOcupados = async () => {
-      let queryAgend = supabase.from('agendamentos').select('data_hora, nome_cliente, owner_id, funcionario_id');
-      if (salonOwnerId) queryAgend = queryAgend.eq('owner_id', salonOwnerId);
+    if (!dataSelecionada || !funcionarioSelecionada) {
+      setHorariosOcupados([]);
+      return;
+    }
+
+    const buscarHorariosOcupadosPorProfissional = async () => {
+      let queryAgend = supabase
+        .from('agendamentos')
+        .select('data_hora, nome_cliente, owner_id, funcionario_id')
+        .eq('owner_id', salonOwnerId || ownerId)
+        .eq('funcionario_id', funcionarioSelecionada); // <-- Filtra APENAS os agendamentos desta profissional!
       
       const { data } = await queryAgend;
       if (data) {
@@ -182,10 +189,9 @@ export function TelaCliente() {
             if (!agend.data_hora) return;
             const dataAgend = new Date(agend.data_hora);
             
-            // Verifica se é o mesmo dia selecionado
             if (dataAgend.toISOString().split('T')[0] !== dataSelecionada) return;
-        
-            let duracaoMinutosAgendamento = 30; 
+
+            let duracaoMinutosAgendamento = 30;
             const matchDuracao = (agend.nome_cliente || '').match(/(\d+)\s*min/);
             if (matchDuracao) {
               duracaoMinutosAgendamento = parseInt(matchDuracao[1], 10);
@@ -193,6 +199,7 @@ export function TelaCliente() {
 
             let horaInicio = new Date(dataAgend);
             let horaFim = new Date(dataAgend.getTime() + duracaoMinutosAgendamento * 60000);
+
             let cursor = new Date(horaInicio);
             while (cursor < horaFim) {
               const h = String(cursor.getHours()).padStart(2, '0');
@@ -211,9 +218,10 @@ export function TelaCliente() {
         setHorariosOcupados(slotsOcupados);
       }
     };
-    buscarHorariosOcupados();
+
+    buscarHorariosOcupadosPorProfissional();
     setHoraSelecionada(''); 
-  }, [dataSelecionada, salonOwnerId]);
+  }, [dataSelecionada, funcionarioSelecionada, salonOwnerId, ownerId]);
 
   const confirmarAgendamento = async (e: React.FormEvent) => {
     e.preventDefault();
