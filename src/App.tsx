@@ -238,8 +238,8 @@ export function TelaCliente() {
     
     const nomeProfDestino = funcObj ? funcObj.nome_funcionario : 'Profissional';
     const textoMensagem = cobrarSinalConfig
-      ? `Olá, ! Me chamo ${nomeCliente}. Acabei de realizar o Pix do sinal de R$ ${valorSinal.toFixed(2)} para a chave (${chavePixSinal}). Agendei os serviços (*${nomesServs}*) para o dia *${dataFormatada}* às *${horaSelecionada}*. Segue o comprovante!`
-      : `Olá, ! Me chamo ${nomeCliente}. Agendei os serviços (*${nomesServs}*) para o dia *${dataFormatada}* às *${horaSelecionada}* pelo GlowAgenda! Total: R$ ${precoTotal.toFixed(2)}`;
+      ? `Olá! Me chamo ${nomeCliente}. Acabei de realizar o Pix do sinal de R$ ${valorSinal.toFixed(2)} para a chave (${chavePixSinal}). Agendei os serviços (*${nomesServs}*) para o dia *${dataFormatada}* às *${horaSelecionada}*. Segue o comprovante!`
+      : `Olá! Me chamo ${nomeCliente}. Agendei os serviços (*${nomesServs}*) para o dia *${dataFormatada}* às *${horaSelecionada}* pelo GlowAgenda! Total: R$ ${precoTotal.toFixed(2)}`;
     
     let numeroDona = confSalao.whatsappProfissional.replace(/\D/g, '');
     if (numeroDona.length === 11 || numeroDona.length === 10) numeroDona = `55${numeroDona}`;
