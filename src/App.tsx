@@ -1294,7 +1294,7 @@ export function TelaProprietaria() {
                   type="button"
                   onClick={() => {
                     const seuNumero = "5512992197185"; 
-                    const texto = encodeURIComponent("Olá! Preciso de ajuda com o meu GlowAgenda! 💖");
+                    const texto = encodeURIComponent("Olá! Preciso de ajuda com o meu GlowAgenda!");
                     window.open(`https://wa.me/${seuNumero}?text=${texto}`, '_blank');
                   }}
                   style={{ background: '#25D366', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px', width: '100%', fontSize: '13px' }}
