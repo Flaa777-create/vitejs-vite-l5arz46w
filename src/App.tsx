@@ -170,23 +170,45 @@ export function TelaCliente() {
   useEffect(() => {
     if (!dataSelecionada) return;
     const buscarHorariosOcupados = async () => {
-      let queryAgend = supabase.from('agendamentos').select('data_hora, owner_id');
+      let queryAgend = supabase.from('agendamentos').select('data_hora, nome_cliente, owner_id, funcionario_id');
       if (salonOwnerId) queryAgend = queryAgend.eq('owner_id', salonOwnerId);
       
       const { data } = await queryAgend;
       if (data) {
-        const ocupados = data
-          .map(agend => { try { return new Date(agend.data_hora); } catch { return null; } })
-          .filter((dataAgend): dataAgend is Date => {
-            if (!dataAgend) return false;
-            return dataAgend.toISOString().split('T')[0] === dataSelecionada;
-          })
-          .map(dataAgend => {
-            const h = String(dataAgend.getHours()).padStart(2, '0');
-            const m = String(dataAgend.getMinutes()).padStart(2, '0');
-            return `${h}:${m}`;
-          });
-        setHorariosOcupados(ocupados);
+        const slotsOcupados: string[] = [];
+
+        data.forEach(agend => {
+          try {
+            if (!agend.data_hora) return;
+            const dataAgend = new Date(agend.data_hora);
+            
+            // Verifica se é o mesmo dia selecionado
+            if (dataAgend.toISOString().split('T')[0] !== dataSelecionada) return;
+        
+            let duracaoMinutosAgendamento = 30; 
+            const matchDuracao = (agend.nome_cliente || '').match(/(\d+)\s*min/);
+            if (matchDuracao) {
+              duracaoMinutosAgendamento = parseInt(matchDuracao[1], 10);
+            }
+
+            let horaInicio = new Date(dataAgend);
+            let horaFim = new Date(dataAgend.getTime() + duracaoMinutosAgendamento * 60000);
+            let cursor = new Date(horaInicio);
+            while (cursor < horaFim) {
+              const h = String(cursor.getHours()).padStart(2, '0');
+              const m = String(cursor.getMinutes()).padStart(2, '0');
+              const slotStr = `${h}:${m}`;
+              if (!slotsOcupados.includes(slotStr)) {
+                slotsOcupados.push(slotStr);
+              }
+              cursor.setMinutes(cursor.getMinutes() + 30);
+            }
+          } catch (e) {
+            console.error('Erro ao calcular horários ocupados:', e);
+          }
+        });
+
+        setHorariosOcupados(slotsOcupados);
       }
     };
     buscarHorariosOcupados();
