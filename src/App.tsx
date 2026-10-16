@@ -412,7 +412,6 @@ export function TelaAuth() {
   const [emailCriado, setEmailCriado] = useState('');
   const [passouPeloPagamento, setPassouPeloPagamento] = useState(false);
 
-  // Carrega o e-mail salvo no localStorage assim que a tela abre
   useEffect(() => {
     const emailSalvo = localStorage.getItem('glowagenda_saved_email');
     if (emailSalvo) {
@@ -424,7 +423,6 @@ export function TelaAuth() {
     e.preventDefault(); 
     setCarregando(true);
 
-    // Salva o e-mail no navegador
     if (email) {
       localStorage.setItem('glowagenda_saved_email', email);
     }
@@ -743,7 +741,7 @@ export function TelaProprietaria() {
     }
   }, [navigate]);
 
-useEffect(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate('/login');
@@ -1128,12 +1126,12 @@ useEffect(() => {
                     <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #222' }}>
                       <button onClick={() => dispararLembreteWhats(agend)} style={{ backgroundColor: '#25D366', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>💬</button>
                       <button onClick={() => { 
-  setAgendamentoSelecionado(agend); 
-  const matchPreco = (agend.nome_cliente || '').match(/R\$\s*([\d,.]+)/);
-  const precoExtraido = matchPreco ? matchPreco[1].replace(',', '.') : '0.00';
-  setValorRecebido(precoExtraido); 
-  setModalBaixaAberto(true); 
-}} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
+                        setAgendamentoSelecionado(agend); 
+                        const matchPreco = (agend.nome_cliente || '').match(/R\$\s*([\d,.]+)/);
+                        const precoExtraido = matchPreco ? matchPreco[1].replace(',', '.') : '0.00';
+                        setValorRecebido(precoExtraido); 
+                        setModalBaixaAberto(true); 
+                      }} style={{ flex: 1, backgroundColor: '#1ebd60', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✓ Realizada</button>
                       <button onClick={() => { setAgendamentoSelecionado(agend); setModalRemarcarAberto(true); }} style={{ flex: 1, backgroundColor: '#d97706', color: '#fff', border: 'none', padding: '6px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>📅 Remarcar</button>
                       <button onClick={() => deletarAgendamento(agend.id)} style={{ backgroundColor: '#dc2626', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
                     </div>
@@ -1144,7 +1142,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-
       {/* ABA ATUALIZAR CARTÃO */}
       {abaAtiva === 'cartao' && (
         <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -1285,6 +1282,41 @@ useEffect(() => {
               >
                 {salvandoConfigSalao ? 'Salvando Configurações...' : '💾 Salvar Alterações'}
               </button>
+
+              {/* SEÇÃO SUPORTE E CANCELAMENTO DE ASSINATURA */}
+              <div style={{ marginTop: '30px', padding: '15px', background: '#f9f9f9', borderRadius: '12px', textAlign: 'center', border: '1px solid #eee' }}>
+                <h4 style={{ color: '#333', marginBottom: '8px', fontSize: '14px' }}>Precisa de Ajuda?</h4>
+                <p style={{ color: '#666', fontSize: '12px', marginBottom: '12px' }}>
+                  Ficou com alguma dúvida ou precisa de suporte técnico? Fale diretamente connosco.
+                </p>
+                
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const seuNumero = "5511999999999"; // Substitua pelo seu WhatsApp com DDD
+                    const texto = encodeURIComponent("Olá! Preciso de ajuda com o meu GlowAgenda! 💖");
+                    window.open(`https://wa.me/${seuNumero}?text=${texto}`, '_blank');
+                  }}
+                  style={{ background: '#25D366', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px', width: '100%', fontSize: '13px' }}
+                >
+                  💬 Falar com o Suporte (WhatsApp)
+                </button>
+
+                <hr style={{ borderColor: '#ddd', margin: '15px 0' }} />
+
+                <button 
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Tem certeza que deseja cancelar sua assinatura do GlowAgenda? Seus dados de agendamento serão pausados.")) {
+                      alert("Solicitação de cancelamento enviada. Nosso suporte entrará em contato para finalizar.");
+                    }
+                  }}
+                  style={{ background: 'transparent', color: '#ff4d4d', border: '1px solid #ff4d4d', padding: '8px 15px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', width: '100%', fontWeight: 'bold' }}
+                >
+                  Cancelar Assinatura
+                </button>
+              </div>
+
             </div>
           )}
           {subAbaAjustes === 'equipe' && (
