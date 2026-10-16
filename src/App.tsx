@@ -1287,7 +1287,7 @@ export function TelaProprietaria() {
               <div style={{ marginTop: '30px', padding: '15px', background: '#f9f9f9', borderRadius: '12px', textAlign: 'center', border: '1px solid #eee' }}>
                 <h4 style={{ color: '#333', marginBottom: '8px', fontSize: '14px' }}>Precisa de Ajuda?</h4>
                 <p style={{ color: '#666', fontSize: '12px', marginBottom: '12px' }}>
-                  Ficou com alguma dúvida ou precisa de suporte técnico? Fale diretamente connosco.
+                  Ficou com alguma dúvida ou precisa de suporte técnico? Fale diretamente conosco.
                 </p>
                 
                 <button 
