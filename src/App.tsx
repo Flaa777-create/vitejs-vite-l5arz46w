@@ -1293,7 +1293,7 @@ export function TelaProprietaria() {
                 <button 
                   type="button"
                   onClick={() => {
-                    const seuNumero = "5511999999999"; // Substitua pelo seu WhatsApp com DDD
+                    const seuNumero = "5512992197185"; 
                     const texto = encodeURIComponent("Olá! Preciso de ajuda com o meu GlowAgenda! 💖");
                     window.open(`https://wa.me/${seuNumero}?text=${texto}`, '_blank');
                   }}
