@@ -140,7 +140,7 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
             <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#ffffff', marginTop: '4px' }}>Ativar Assinatura do SaaS</h2>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>R$ 69,90</span>
+            <span style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>R$ 79,90</span>
             <span style={{ fontSize: '11px', color: '#9ca3af', display: 'block' }}>/mês</span>
           </div>
         </div>
@@ -286,7 +286,7 @@ export function TelaPagamento({ userId = '', emailOriginal = '', onSucesso = () 
             disabled={carregando} 
             style={{ width: '100%', backgroundColor: '#db2777', color: '#ffffff', fontWeight: 'bold', padding: '12px', borderRadius: '12px', marginTop: '8px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: carregando ? 0.5 : 1, boxShadow: '0 10px 15px -3px rgba(219, 39, 119, 0.3)' }}
           >
-            {carregando ? 'Gerando Pagamento...' : metodoPagamento === 'pix' ? 'Gerar QR Code Pix' : 'Confirmar e Assinar R$ 69,90/mês'}
+            {carregando ? 'Gerando Pagamento...' : metodoPagamento === 'pix' ? 'Gerar QR Code Pix' : 'Confirmar e Assinar R$ 79,90/mês'}
           </button>
 
           <p style={{ textAlign: 'center', fontSize: '11px', color: '#6b7280', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '16px 0 0 0' }}>
