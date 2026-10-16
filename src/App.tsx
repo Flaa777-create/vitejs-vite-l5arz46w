@@ -295,6 +295,56 @@ export function TelaCliente() {
         
         <form onSubmit={confirmarAgendamento}>
           <div style={{ marginBottom: '10px', color: '#333', fontSize: '14px', fontWeight: 'bold' }}>Selecione o(s) Serviço(s):</div>
+          {/* Card Destaque: Eventos Especiais / Noivas */}
+<div style={{
+  background: 'linear-gradient(135deg, #fff5f8 0%, #fef0f5 100%)',
+  border: '1px solid #f3c6d8',
+  borderRadius: '16px',
+  padding: '16px',
+  marginBottom: '20px',
+  boxShadow: '0 4px 12px rgba(230, 81, 137, 0.08)',
+  textAlign: 'center'
+}}>
+  <div style={{ fontSize: '22px', marginBottom: '4px' }}>✨👑</div>
+  <h3 style={{ 
+    fontSize: '16px', 
+    fontWeight: '700', 
+    color: '#9c27b0', 
+    margin: '0 0 6px 0' 
+  }}>
+    Dia de Noiva & Eventos Especiais
+  </h3>
+  <p style={{ 
+    fontSize: '13px', 
+    color: '#666', 
+    margin: '0 0 12px 0', 
+    lineHeight: '1.4' 
+  }}>
+    Precisa de um atendimento exclusivo para casamentos, formaturas ou festas? Conte conosco para o seu dia especial!
+  </p>
+  <button
+    type="button"
+    onClick={() => {
+      const telefone = salonData?.telefone || '5511999999999';
+      const msg = encodeURIComponent(`Olá! Gostaria de solicitar um orçamento para Eventos Especiais/ Dia de Noiva no ${salonData?.nome || 'salão'}.`);
+      window.open(`https://wa.me/${telefone.replace(/\D/g, '')}?text=${msg}`, '_blank');
+    }}
+    style={{
+      background: 'linear-gradient(90deg, #e91e63 0%, #9c27b0 100%)',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '20px',
+      padding: '8px 18px',
+      fontSize: '13px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      boxShadow: '0 2px 8px rgba(233, 30, 99, 0.25)',
+      transition: 'all 0.2s ease'
+    }}
+  >
+    💬 Solicitar Orçamento Exclusivo
+  </button>
+</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '160px', overflowY: 'auto', marginBottom: '15px' }}>
             {servicosDoSalao.length === 0 ? (
               <div style={{ fontSize: '12px', color: '#888', textAlign: 'center', padding: '10px' }}>Nenhum serviço disponível no momento.</div>
