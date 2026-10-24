@@ -1008,7 +1008,7 @@ export function TelaProprietaria() {
   const entradasHoje = lancamentosFiltrados.reduce((total, l) => total + (Number(l.valor_pago) || Number(l.preco) || 0), 0);
   const totalAgendamentos = lancamentosFiltrados.length;
  
-  const percentualComissao = (taxaComissao || 0) / 100;
+  const percentualComissao = (Number(taxaComissao) || 0) / 100;
   const totalComissaoParceiras = lancamentosFiltrados.reduce((total, l) => {
     if (l.funcionario_id || (l.nome_funcionario && l.nome_funcionario !== 'Dona do Salão')) {
       return total + ((Number(l.valor_pago) || Number(l.preco) || 0) * percentualComissao);
@@ -1145,7 +1145,7 @@ export function TelaProprietaria() {
           <h3 style={{ margin: '15px 0 0 0', color: '#fff', fontSize: '16px' }}>🤝 Cálculo de Comissões</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
             <div style={{ backgroundColor: '#29292e', borderRadius: '8px', padding: '15px' }}>
-              <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#aaa', fontSize: '13px' }}>Repasse Equipe (<input type="number" value={taxaComissao} onChange={(e)=> setTaxaComissao(Number(e.target.value))} style={{ width: '40px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} />%) </p>              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold' }}>
+              <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#aaa', fontSize: '13px' }}>Repasse Equipe (<input type="number" value={taxaComissao} onChange={(e)=> setTaxaComissao(e.target.value === ''?'': Number(e.target.value))} style={{ width: '40px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} />%) </p>              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold' }}>
                 <span>Total Comissões</span>
                 <span style={{ color: '#ff4a7d' }}>R$ {totalComissaoParceiras.toFixed(2)}</span>
               </div>
