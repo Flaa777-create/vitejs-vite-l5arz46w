@@ -325,9 +325,20 @@ export function TelaCliente() {
   <button
     type="button"
     onClick={() => {
-      const telefone = salonData?.telefone || '5511999999999';
-      const msg = encodeURIComponent(`Olá! Gostaria de solicitar um orçamento para Eventos Especiais/ Dia de Noiva no ${salonData?.nome || 'salão'}.`);
-      window.open(`https://wa.me/${telefone.replace(/\D/g, '')}?text=${msg}`, '_blank');
+      // Pega o telefone do salão cadastrado ou usa um padrão
+      const telefoneBruto = salonData?.whatsapp || salonData?.telefone || '11999999999';
+      
+      // Limpa para deixar apenas números
+      const telefoneApenasNumeros = telefoneBruto.replace(/\D/g, '');
+      
+      // Garante o DDD/País de forma limpa (adiciona 55 se não tiver)
+      const telefoneFinal = telefoneApenasNumeros.startsWith('55') 
+        ? telefoneApenasNumeros 
+        : `55${telefoneApenasNumeros}`;
+    
+      const msg = encodeURIComponent(`Olá! Gostaria de solicitar um orçamento exclusivo para eventos especiais.`);
+      
+      window.open(`https://wa.me/${telefoneFinal}?text=${msg}`, '_blank');
     }}
     style={{
       background: 'linear-gradient(90deg, #e91e63 0%, #9c27b0 100%)',
