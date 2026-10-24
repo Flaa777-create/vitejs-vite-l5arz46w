@@ -323,38 +323,33 @@ export function TelaCliente() {
     Precisa de um atendimento exclusivo para casamentos, formaturas ou festas? Conte conosco para o seu dia especial!
   </p>
   <button
-    type="button"
-    onClick={() => {
-      // Pega o telefone do salão cadastrado ou usa um padrão
-      const telefoneBruto = salonData?.whatsapp || salonData?.telefone || '11999999999';
-      
-      // Limpa para deixar apenas números
-      const telefoneApenasNumeros = telefoneBruto.replace(/\D/g, '');
-      
-      // Garante o DDD/País de forma limpa (adiciona 55 se não tiver)
-      const telefoneFinal = telefoneApenasNumeros.startsWith('55') 
-        ? telefoneApenasNumeros 
-        : `55${telefoneApenasNumeros}`;
+  type="button"
+  onClick={() => {
+    // Busca o número do salão cadastrado ou usa o do teste
+    const num = salonData?.whatsapp || salonData?.telefone || '11999999999';
+    const numLimpo = num.replace(/\D/g, '');
+    const numFinal = numLimpo.startsWith('55') ? numLimpo : `55${numLimpo}`;
     
-      const msg = encodeURIComponent(`Olá! Gostaria de solicitar um orçamento exclusivo para eventos especiais.`);
-      
-      window.open(`https://wa.me/${telefoneFinal}?text=${msg}`, '_blank');
-    }}
-    style={{
-      background: 'linear-gradient(90deg, #e91e63 0%, #9c27b0 100%)',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '20px',
-      padding: '8px 18px',
-      fontSize: '13px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      boxShadow: '0 2px 8px rgba(233, 30, 99, 0.25)',
-      transition: 'all 0.2s ease'
-    }}
-  >
-    💬 Solicitar Orçamento Exclusivo
-  </button>
+    const texto = encodeURIComponent('Olá! Gostaria de solicitar um orçamento exclusivo para eventos especiais.');
+    
+    // Redireciona diretamente para o WhatsApp
+    window.location.href = `https://wa.me/${numFinal}?text=${texto}`;
+  }}
+  style={{
+    background: 'linear-gradient(90deg, #e91e63 0%, #9c27b0 100%)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '20px',
+    padding: '8px 18px',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    boxShadow: '0 2px 8px rgba(233, 30, 99, 0.25)',
+    transition: 'all 0.2s ease'
+  }}
+>
+  💬 Solicitar Orçamento Exclusivo
+</button>
 </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '160px', overflowY: 'auto', marginBottom: '15px' }}>
             {servicosDoSalao.length === 0 ? (
