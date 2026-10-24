@@ -762,7 +762,13 @@ export function TelaProprietaria() {
   const [novaHora, setNovaHora] = useState('');
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [currentOwnerId, setCurrentOwnerId] = useState<string | null>(null);
-  const [taxaComissao, setTaxaComissao] = useState<number>(50);
+  const [taxaComissao, setTaxaComissao] = useState<number>(() => {
+    const salva = localStorage.getItem('glow_taxa_comissao');
+    return salva ? Number(salva) : 50;
+  });
+  useEffect(() => {
+    localStorage.setItem('glow_taxa_comissao', String(taxaComissao));
+  }, [taxaComissao]);
 
   const verificarClienteVIP = (nomeCliente: string, listaAgendamentos: any[]) => {
     const nomeLimpo = nomeCliente.split(' ')[0].toLowerCase();
@@ -1150,7 +1156,7 @@ export function TelaProprietaria() {
               type="number"
                value={taxaComissao}
                 onChange={(e) => setTaxaComissao(e.target.value === ''? 0 : Number(e.target.value))}
-                style={{ width: '40px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} 
+                style={{ width: '45px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} 
 /> </p>   
            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold' }}>
                 <span>Total Comissões</span>
