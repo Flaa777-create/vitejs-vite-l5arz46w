@@ -325,15 +325,18 @@ export function TelaCliente() {
   <button
   type="button"
   onClick={() => {
-    // Busca o número do salão cadastrado ou usa o do teste
-    const num = salonData?.whatsapp || salonData?.telefone || '11999999999';
-    const numLimpo = num.replace(/\D/g, '');
-    const numFinal = numLimpo.startsWith('55') ? numLimpo : `55${numLimpo}`;
+    // Pega o WhatsApp guardado no estado 'confSalao' ou usa o padrão
+    const tel = confSalao?.whatsappProfissional || confSalao?.whatsapp || '11999999999';
     
-    const texto = encodeURIComponent('Olá! Gostaria de solicitar um orçamento exclusivo para eventos especiais.');
+    // Remove caracteres que não sejam números
+    const apenasNum = String(tel).replace(/\D/g, '');
     
-    // Redireciona diretamente para o WhatsApp
-    window.location.href = `https://wa.me/${numFinal}?text=${texto}`;
+    // Garante que tem o 55 do Brasil no início
+    const telFinal = apenasNum.startsWith('55') ? apenasNum : `55${apenasNum}`;
+    
+    const msg = encodeURIComponent(`Olá! Gostaria de solicitar um orçamento exclusivo para eventos especiais.`);
+    
+    window.open(`https://wa.me/${telFinal}?text=${msg}`, '_blank');
   }}
   style={{
     background: 'linear-gradient(90deg, #e91e63 0%, #9c27b0 100%)',
