@@ -762,10 +762,7 @@ export function TelaProprietaria() {
   const [novaHora, setNovaHora] = useState('');
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [currentOwnerId, setCurrentOwnerId] = useState<string | null>(null);
-  const [taxaComissao, setTaxaComissao] = useState<number>(() => {
-    const taxaSalva = localStorage.getItem('glow_taxa_comissao');
-    return taxaSalva ? Number(taxaSalva) : 50; // Se já tiver valor salvo, usa ele; senão, começa em 50
-  });
+  const [taxaComissao, setTaxaComissao] = useState<number>(50);
 
   const verificarClienteVIP = (nomeCliente: string, listaAgendamentos: any[]) => {
     const nomeLimpo = nomeCliente.split(' ')[0].toLowerCase();
@@ -1148,17 +1145,12 @@ export function TelaProprietaria() {
           <h3 style={{ margin: '15px 0 0 0', color: '#fff', fontSize: '16px' }}>🤝 Cálculo de Comissões</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
             <div style={{ backgroundColor: '#29292e', borderRadius: '8px', padding: '15px' }}>
-              <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#aaa', fontSize: '13px' }}>Repasse Equipe (<input 
+              <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#aaa', fontSize: '13px' }}>Repasse Equipe (
+                <input 
               type="number"
                value={taxaComissao}
-                onChange={(e)=> {
-                   const novoValor = e.targer.value === ''?'': Number(e.target.value);
-                    setTaxaComissao(novoValor);
-                     if (novoValor !=='') {
-                       localStorage.setItem('glow_taxa_comissao', String(novoValor));
-    }
-  }} 
-  style={{ width: '40px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} 
+                onChange={(e) => setTaxaComissao(e.target.value === ''? 0 : Number(e.target.value))}
+                style={{ width: '40px', backgroundColor: '#121215', border: '1px solid #ff4a7d', borderRadius: '4px', color: '#fff', textAlign: 'center' }} 
 /> </p>   
            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold' }}>
                 <span>Total Comissões</span>
